@@ -49,6 +49,19 @@
 
 - name: Include prompts playbook
   import_playbook: input.yml
+  
+# - name: Print vars
+#   import_playbook: a.yml
+
+# - name: tasks
+#   hosts: localhost
+#   tasks:
+#     - debug:
+#         msg: 
+#           - "is: {{lookup('vars', 'ansible_facts')}}"
+#     - name: fail now and show
+#       fail:
+#         msg: "fail now and show"
 
 - name: Include cloud provisioning playbook
   import_playbook: cloud.yml

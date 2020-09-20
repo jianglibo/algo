@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  tasks:
+    # - debug: var=inventory_hostname
+    # - debug: var=ansible_hostname
+    - debug:
+        var: ansible_facts
+    - debug:
+        msg:
+          - "hello world."
+    # - debug: var=hostvars
