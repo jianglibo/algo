@@ -8,3 +8,6 @@
       debug: var=item
       with_file:
         - "file-content.txt"
+    - name: print group_vars
+      debug:
+        var: hcloud_token
