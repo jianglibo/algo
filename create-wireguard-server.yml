@@ -66,7 +66,6 @@
 #- { name: "Install to existing Ubuntu 18.04 or 20.04 server (for more advanced users)", alias: local }
 # variables: algo_hcloud_token, region, algo_provider, server_name
 # -e '{"algo_hcloud_token": "", "algo_hcloud_region": "nbg1", "server_name": "algo"}'
-# ansible-playbook  create-wireguard-server.yml -v -e "algo_provider=hetzner region=nbg1 algo_server_name=algo"
 
 #What region should the server be located in?
 #1. fsn1     Falkenstein 1 DC14
@@ -88,5 +87,6 @@
 #TASK [Additional variables for the server] ********************************************************************************************************************
 #changed: [localhost] => {"add_host": {"groups": [], "host_name": "94.130.150.183", "host_vars": {"ansible_ssh_private_key_file": "/tmp/algo-ssh.pem"}}, "changed": true}
 
+# ansible-playbook  create-wireguard-server.yml -v -e "algo_provider=hetzner region=nbg1 algo_server_name=algo"
 - name: Include cloud provisioning playbook
   import_playbook: cloud-create.yml

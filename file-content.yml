@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  become: false
+  tasks:
+    - debug: 
+        msg: the value of file-content.txt is {{lookup('file', 'file-content.txt') | from_json}}
+    - name: display multiple file contents
+      debug: var=item
+      with_file:
+        - "file-content.txt"

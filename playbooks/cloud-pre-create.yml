@@ -20,12 +20,14 @@
       size: 2048
       mode: "0600"
       type: RSA
+      backup: yes
 
   - name: Generate the SSH public key
     openssl_publickey:
       path: "{{ SSH_keys.public }}"
       privatekey_path: "{{ SSH_keys.private }}"
       format: OpenSSH
+      backup: yes
 
   - name: Copy the private SSH key to /tmp
     copy:
