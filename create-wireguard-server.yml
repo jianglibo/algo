@@ -1,0 +1,92 @@
+---
+- hosts: localhost
+  become: false
+  tasks:
+    - name: Playbook dir stat
+      stat:
+        path: "{{ playbook_dir }}"
+      register: _playbook_dir
+
+    - name: Ensure Ansible is not being run in a world writable directory
+      assert:
+        that: _playbook_dir.stat.mode|int <= 0775
+        msg: >
+          Ansible is being run in a world writable directory ({{ playbook_dir }}), ignoring it as an ansible.cfg source.
+          For more information see https://docs.ansible.com/ansible/devel/reference_appendices/config.html#cfg-in-world-writable-dir
+
+    - name: Ensure the requirements installed
+      debug:
+        msg: "{{ '' | ipaddr }}"
+      ignore_errors: true
+      no_log: true
+      register: ipaddr
+    - name: install python3-pip
+      apt:
+        pkg:
+          - python3-pip
+
+    - name: Set required ansible version as a fact
+      set_fact:
+        required_ansible_version:
+          "{{ item |  regex_replace('^ansible[\\s+]?(?P<op>[=,>,<]+)[\\s+]?(?P<ver>\\d.\\d(.\\d+)?)$',
+                      '{\"op\": \"\\g<op>\",\"ver\": \"\\g<ver>\" }') }}"
+      when: '"ansible" in item'
+      with_items: "{{ lookup('file', 'requirements.txt').splitlines() }}"
+
+    - name: Verify Python meets Algo VPN requirements
+      assert:
+        that: (ansible_python.version.major|string + '.' + ansible_python.version.minor|string)|float is version('3.6', '>=')
+        msg: >
+          Python version is not supported.
+          You must upgrade to at least Python 3.6 to use this version of Algo.
+          See for more details - https://trailofbits.github.io/algo/troubleshooting.html#python-version-is-not-supported
+
+    - name: Verify Ansible meets Algo VPN requirements
+      assert:
+        that:
+          - ansible_version.full is version(required_ansible_version.ver, required_ansible_version.op)
+          - not ipaddr.failed
+        msg: >
+          Ansible version is {{ ansible_version.full }}.
+          You must update the requirements to use this version of Algo.
+          Try to run python3 -m pip install -U -r requirements.txt
+
+#providers_map:
+#- { name: DigitalOcean, alias: digitalocean }
+#- { name: Amazon Lightsail, alias: lightsail }
+#- { name: Amazon EC2, alias: ec2 }
+#- { name: Microsoft Azure, alias: azure }
+#- { name: Google Compute Engine, alias: gce }
+#- { name: Hetzner Cloud, alias: hetzner }
+#- { name: Vultr, alias: vultr }
+#- { name: Scaleway, alias: scaleway}
+#- { name: OpenStack (DreamCompute optimised), alias: openstack }
+#- { name: CloudStack (Exoscale optimised), alias: cloudstack }
+#- { name: Linode, alias: linode }
+#- { name: "Install to existing Ubuntu 18.04 or 20.04 server (for more advanced users)", alias: local }
+# variables: algo_hcloud_token, region, algo_provider, server_name
+# -e '{"algo_hcloud_token": "", "algo_hcloud_region": "nbg1", "server_name": "algo"}'
+# ansible-playbook  create-wireguard-server.yml -v -e "algo_provider=hetzner region=nbg1 algo_server_name=algo"
+
+#What region should the server be located in?
+#1. fsn1     Falkenstein 1 DC14
+#2. hel1     Helsinki 1 DC 2
+#3. nbg1     Nuremberg 1 DC 3
+
+#TASK [cloud-hetzner : Create a server...] *********************************************************************************************************************
+#changed: [localhost] => {"changed": true, "hcloud_server": {"backup_window": "None", "datacenter": "nbg1-dc3", "id": "7704286", "image": "ubuntu-20.04", "ipv4_address": "94.130.150.183", "ipv6": "2a01:4f8:c0c:aa58::/64", "labels": {"Environment": "algo"}, "location": "nbg1", "name": "algo", "rescue_enabled": false, "server_type": "cx11", "status": "running"}, "root_password": null}
+#
+#TASK [cloud-hetzner : set_fact] *******************************************************************************************************************************
+#ok: [localhost] => {"ansible_facts": {"ansible_ssh_port": 4160, "ansible_ssh_user": "algo", "cloud_instance_ip": "94.130.150.183", "cloudinit": true}, "changed": false}
+#
+#TASK [Set subjectAltName as a fact] ***************************************************************************************************************************
+#ok: [localhost] => {"ansible_facts": {"IP_subject_alt_name": "94.130.150.183"}, "changed": false}
+
+#ASK [Add the server to an inventory group] *******************************************************************************************************************
+#changed: [localhost] => {"add_host": {"groups": ["vpn-host"], "host_name": "94.130.150.183", "host_vars": {"IP_subject_alt_name": "94.130.150.183", "algo_provider": "hetzner", "algo_server_name": "algo", "alternative_ingress_ip": false, "ansible_connection": "ssh", "ansible_python_interpreter": "/usr/bin/python3", "ansible_ssh_port": "4160", "ansible_ssh_user": "algo", "cloudinit": true}}, "changed": true}
+#
+#TASK [Additional variables for the server] ********************************************************************************************************************
+#changed: [localhost] => {"add_host": {"groups": [], "host_name": "94.130.150.183", "host_vars": {"ansible_ssh_private_key_file": "/tmp/algo-ssh.pem"}}, "changed": true}
+
+- name: Include cloud provisioning playbook
+  import_playbook: cloud-create.yml

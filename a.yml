@@ -22,5 +22,44 @@
         pkg:
           - git
           - python3-virtualenv
+    - name: checkout algo
+      git:
+        repo: https://github.com/jianglibo/algo.git
+        dest: "{{ ansible_facts.env.HOME }}/algo"
+    - name: install other dependencies
+      shell: |
+        python3 -m virtualenv --python="$(command -v python3)" .env &&
+        source .env/bin/activate &&
+        python3 -m pip install -U pip virtualenv &&
+        python3 -m pip install -r requirements.txt
+      args:
+        chdir: ~/algo
+        executable: /bin/bash
+        creates: ~/algo/.env
+    - name: install wireguard
+      shell: |
+        source .env/bin/activate && 
+        ./algo -e '{"provider": "local", "ondemand_cellular": "N", "ondemand_wifi": "N", "ipsec_enabled": false, "dns_adblocking": "N", "ssh_tunneling": "N", "server": "localhost", "endpoint": "94.130.169.110"}'
+      args:
+        chdir: ~/algo
+        executable: /bin/bash
+        creates: ~/algo/configs/localhost
+    - name: Creates an entry like "SHELL=/bin/bash" on top of crontab
+      cron:
+        name: SHELL
+        env: yes
+        job: /bin/bash
+    - name: add cron
+      cron:
+        name: "check dirs"
+        minute: "*/2"
+        job: "cd /root/algo && source ./.env/bin/activate && ./algo --skip-tags \"debug\" update-users -e '{\"server\": \"localhost\", \"users\": [\"u11\", \"u2\", \"u3\"]}'"
+      
+      
+    # - name: demo command output
+    #   command: ls
+    #   register: ls_contents
+    # - debug:
+    #     var: ls_contents
 
     # - debug: var=hostvars
