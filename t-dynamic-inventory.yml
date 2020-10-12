@@ -12,8 +12,25 @@
         ansible_ssh_user: root
 
 - name: Configure the client and install required software
-  hosts: vpn-server
+  hosts: localhost
+  # hosts: vpn-server
   gather_facts: false
+  vars:
+    list_var:
+      - northeast
+      - southeast
+      - midwest
   tasks:
     - debug:
         var: client_ip
+    - name: set list variables
+      debug:
+        msg: "{{ list_var | to_json }}"
+    - name: Register loop output as a variable
+      shell: "echo {{ item }}"
+      loop:
+        - "one"
+        - "two"
+      register: echo
+    - debug:
+        msg: "{{ echo.results | map(attribute='item') | list | to_json}}"
