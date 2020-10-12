@@ -1,4 +1,23 @@
 ---
+- name: test shell
+  hosts: localhost
+  gather_facts: false
+  vars:
+    a: 12345
+    arr: []
+  tasks:
+    - name: t shell
+      shell: |
+        echo '{{ a }}' &&
+        echo 'hello{{ a }}'
+      args:
+        executable: /bin/bash
+    - debug:
+        msg: "{{ {'a': 1} | combine({'b': 2}) }}"
+    - name: test array
+      debug:
+        msg: "{{ arr == [] }}"
+
 - name: Configure the client
   hosts: localhost
   gather_facts: false

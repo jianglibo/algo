@@ -1,5 +1,30 @@
 ---
-- hosts: t-server
+- name: Add vpn_server_ip to vpn-server
+  hosts: localhost
+  gather_facts: false
+  become: false
+  
+  tasks:
+    - name: Add the droplet to an inventory group
+      add_host:
+        # name: "{{ vpn_server_ip | default('1.1.1.1') }}"
+        name: "{{ vpn_server_ip }}"
+        groups: vpn-server
+        ansible_ssh_user: root
+- name: install algo in target server.
+  # gather_facts: false
+  hosts: vpn-server
+        # ./algo -e '{"provider": "local", "ondemand_cellular": "N", "ondemand_wifi": "N", "ipsec_enabled": false, "dns_adblocking": "N", "ssh_tunneling": "N", "server": "localhost", "endpoint": "94.130.169.110"}'
+  vars:
+    algo_extra_var:
+      provider: local
+      ondemand_cellular: N
+      ondemand_wifi: N
+      ipsec_enabled: false
+      dns_adblocking: N
+      ssh_tunneling: N
+      server: localhost
+      endpoint: "{{ vpn_server_ip }}"
   tasks:
     # - debug: var=inventory_hostname
     # - debug: var=ansible_hostname
@@ -8,8 +33,7 @@
     - debug:
         var: ansible_facts.python
     - debug:
-        msg:
-          - "hello world."
+        msg: "{{ algo_extra_var | to_json }}"
     # - assert:
     #     that:
     #       - "'foo' in 'some_command_result.stdout,foo'"
@@ -39,7 +63,7 @@
     - name: install wireguard
       shell: |
         source .env/bin/activate && 
-        ./algo -e '{"provider": "local", "ondemand_cellular": "N", "ondemand_wifi": "N", "ipsec_enabled": false, "dns_adblocking": "N", "ssh_tunneling": "N", "server": "localhost", "endpoint": "94.130.169.110"}'
+        ./algo -e '{{ algo_extra_var | to_json }}'
       args:
         chdir: ~/algo
         executable: /bin/bash
@@ -53,7 +77,7 @@
       cron:
         name: "check dirs"
         minute: "*/2"
-        job: "cd /root/algo && source ./.env/bin/activate && ./algo --skip-tags \"debug\" update-users -e '{\"server\": \"localhost\", \"users\": [\"u11\", \"u2\", \"u3\"]}'"
+        job: "cd /root/algo && source ./.env/bin/activate && ./algo --skip-tags \"debug\" update-users -e '{{ {'server': 'localhost'} | combine({'users': users | to_json) }}'"
       
       
     # - name: demo command output
