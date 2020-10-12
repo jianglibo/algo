@@ -1,0 +1,19 @@
+---
+- name: Configure the client
+  hosts: localhost
+  gather_facts: false
+  become: false
+  
+  tasks:
+    - name: Add the droplet to an inventory group
+      add_host:
+        name: "{{ client_ip }}"
+        groups: vpn-server
+        ansible_ssh_user: root
+
+- name: Configure the client and install required software
+  hosts: vpn-server
+  gather_facts: false
+  tasks:
+    - debug:
+        var: client_ip
