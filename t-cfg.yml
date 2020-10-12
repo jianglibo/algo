@@ -4,6 +4,9 @@
   gather_facts: false
   vars_files:
     - config.cfg
+    - config-mine.cfg
+  vars:
+    users: ["1"]
   
   tasks:
     - debug:
