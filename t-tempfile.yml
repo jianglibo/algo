@@ -1,0 +1,35 @@
+---
+- name: test shell
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    # - name: Create temporary build directory
+    #   tempfile:
+    #     state: directory
+    #     suffix: build
+    - name: Create temporary file
+      tempfile:
+        state: file
+        suffix: temp
+      register: tempfile_1
+    
+    - name: write content
+      copy:
+        content: "hello world in file"
+        dest: "{{ tempfile_1.path }}"
+    
+    - debug:
+        msg: "{{ lookup('file', tempfile_1.path) }}"
+
+    - name: with_sequence -> loop
+      debug:
+        msg: "{{ 'testuser%02x' | format(item) }}"
+       # range is exclusive of the end point
+      loop: "{{ range(0, 4 + 1)|list }}"
+    #   https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#complex-loops
+
+    - name: Use the registered var and the file module to remove the temporary file
+      file:
+        path: "{{ tempfile_1.path }}"
+        state: absent
+      when: tempfile_1.path is defined
