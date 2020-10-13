@@ -1,0 +1,13 @@
+---
+- name: Add vpn_server_ip to vpn-server
+  hosts: localhost
+  gather_facts: false
+  become: false
+  
+  tasks:
+    - name: Add the vpn_server_ip to an inventory group vpn-server
+      add_host:
+        # name: "{{ vpn_server_ip | default('1.1.1.1') }}"
+        name: "{{ vpn_server_ip }}"
+        groups: vpn-server
+        ansible_ssh_user: root

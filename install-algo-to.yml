@@ -1,16 +1,6 @@
 ---
 - name: Add vpn_server_ip to vpn-server
-  hosts: localhost
-  gather_facts: false
-  become: false
-  
-  tasks:
-    - name: Add the droplet to an inventory group
-      add_host:
-        # name: "{{ vpn_server_ip | default('1.1.1.1') }}"
-        name: "{{ vpn_server_ip }}"
-        groups: vpn-server
-        ansible_ssh_user: root
+  import_playbook: prepare-group.yml
 - name: install algo in target server.
   # gather_facts: false
   hosts: vpn-server
@@ -25,6 +15,7 @@
       ssh_tunneling: N
       server: localhost
       endpoint: "{{ vpn_server_ip }}"
+      store_pki: true
   tasks:
     # - debug: var=inventory_hostname
     # - debug: var=ansible_hostname
@@ -46,6 +37,7 @@
         pkg:
           - git
           - python3-virtualenv
+        update_cache: yes
     - name: checkout algo
       git:
         repo: https://github.com/jianglibo/algo.git
@@ -60,10 +52,14 @@
         chdir: ~/algo
         executable: /bin/bash
         creates: ~/algo/.env
+    - name: copy vault password
+      copy:
+        src: /opt/hetzner.pwd
+        dest: /opt/hetzner.pwd
     - name: install wireguard
       shell: |
         source .env/bin/activate && 
-        ./algo -e '{{ algo_extra_var | to_json }}'
+        ./algo --vault-id hetzner@/opt/hetzner.pwd -e '{{ algo_extra_var | to_json }}'
       args:
         chdir: ~/algo
         executable: /bin/bash
@@ -73,13 +69,42 @@
         name: SHELL
         env: yes
         job: /bin/bash
+    - name: enable cron log
+      lineinfile:
+        path: /etc/rsyslog.d/50-default.conf
+        regexp: '^#(cron\..*)$'
+        line: '\1'
+        backrefs: yes
+      register: log_cfg_changed
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html
+    - debug:
+        var: log_cfg_changed
+    - name: restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+      when: log_cfg_changed.changed
+    - name: Deny everything and enable UFW
+      community.general.ufw:
+        state: enabled
+        policy: allow
+    - name: allow open ssh.
+      community.general.ufw:
+        rule: allow
+        name: OpenSSH
+    - name: Allow all access to tcp port 80
+      community.general.ufw:
+        rule: allow
+        port: '51820'
+        proto: udp
     - name: add cron
       cron:
         name: "check dirs"
-        minute: "*/2"
-        job: "cd /root/algo && source ./.env/bin/activate && ./algo --skip-tags \"debug\" update-users -e '{{ {'server': 'localhost'} | combine({'users': users | to_json) }}'"
+        minute: "*/5"
+        job: "cd /root/algo && source ./.env/bin/activate && ./algo --skip-tags \"debug\" update-users -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'"
       
-      
+  #  ansible-galaxy collection install community.general   
+  # Installing 'community.general:1.2.0' to '/home/jianglibo/.ansible/collections/ansible_collections/community/general'
     # - name: demo command output
     #   command: ls
     #   register: ls_contents
@@ -87,3 +112,38 @@
     #     var: ls_contents
 
     # - debug: var=hostvars
+#cat  /etc/wireguard/wg0.conf
+#[Interface]
+#Address = 10.19.49.1/24 ,2001:db8:a160::1/48
+#ListenPort = 51820
+#PrivateKey = mI35hg1bYiXPhyxjs4qS8ukpl3huZdyM68oFu7bZuk8=
+#SaveConfig = false
+#
+#
+#[Peer]
+## phone
+#PublicKey = Dc1+reLwHVTWT/FELrQ6g4v6C3j+NY6PgqOiEIyNI3o=
+#PresharedKey = 1KL1/IjfTsoLcQOIXb9eJrU5x79mGQ9BtAaNJXFSrHA=
+#AllowedIPs = 10.19.49.2/32,2001:db8:a160::2/128
+#
+#[Peer]
+## laptop
+#PublicKey = B3Km3QUrH45BVI+7apP0h26+C49+hToTmNvw4TXCzgA=
+#PresharedKey = afEz33Ke4lq05YPONiOGwoQLwbm7g6ga7gNaDnM43q8=
+#AllowedIPs = 10.19.49.3/32,2001:db8:a160::3/128
+#
+#[Peer]
+## desktop
+#PublicKey = I3wpImNCUjNAd/EdHKciso5vNTxa15jO8hmRAScEC2E=
+#PresharedKey = UL/M+hwC/JGHOtD/PtMtlfO8jIxy7Vw7bFBb68Aj1Lk=
+#AllowedIPs = 10.19.49.4/32,2001:db8:a160::4/128
+
+# ls algo/configs/localhost/wireguard/
+# desktop.conf  desktop.png  laptop.conf  laptop.png  phone.conf  phone.png
+
+# ls algo/configs/localhost/wireguard/apple/ios/
+# desktop.mobileconfig  laptop.mobileconfig  phone.mobileconfig
+
+# ls algo/configs/localhost/wireguard/apple/macos/
+# desktop.mobileconfig  laptop.mobileconfig  phone.mobileconfig
+
