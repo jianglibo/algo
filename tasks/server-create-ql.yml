@@ -1,0 +1,24 @@
+- name: Get data from Github
+  uri:
+    url: "{{ gl_endpoint }}"
+    method: POST
+    headers:
+      x-hasura-admin-secret: "{{ hasura_admin }}"
+    body_format: json
+    body:
+      query: |
+        mutation CreateServer {
+          insert_server_one(object: {ipv4: "{{ vpn_server_ip }}", provider: hetzner}) {
+            id
+            created_at
+            ipv4
+            provider
+            region
+            removed
+          }
+        }
+  register: server_result
+- debug:
+    msg: "{{ server_result.json.data.insert_server_one }}"
+
+# https://yaml-multiline.info/

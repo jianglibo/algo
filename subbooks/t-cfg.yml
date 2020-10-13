@@ -1,0 +1,34 @@
+---
+- name: Configure the server and install required software
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../config.cfg
+    - ../config-mine.cfg
+    - ../vars/sec.yml
+  vars:
+    users: ["1"]
+    multiple_line: |
+      mutation CreateServer {
+        insert_server_one(object: {ipv4: "1.1.1.1", provider: hetzner}) {
+          id
+          created_at
+          ipv4
+          provider
+          region
+          removed
+        }
+      }
+  tasks:
+    - debug:
+        var: users
+    - debug:
+        var: multiple_line
+    - debug:
+        var: abc
+    - debug:
+        var: hetzner
+    - debug:
+        var: hasura
+
+

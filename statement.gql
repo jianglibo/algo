@@ -1,0 +1,20 @@
+mutation CreateServer {
+	insert_server_one(object: { ipv4: "1.1.1.1", provider: hetzner}) {
+		id
+		created_at
+		ipv4
+		provider
+		region
+		removed
+	}
+}
+
+
+mutation CreateServers {
+	insert_server(objects: [ { ipv4: "1.1.1.1", provider: hetzner}, 
+	 { ipv4: "1.1.1.21", provider: hetzner}]) {
+		returning {
+			id
+		}
+	}
+}
