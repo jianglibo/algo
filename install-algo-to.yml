@@ -101,7 +101,8 @@
       cron:
         name: "check dirs"
         minute: "*/5"
-        job: "cd /root/algo && source ./.env/bin/activate && ./algo --skip-tags \"debug\" update-users -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'"
+        job: "cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'"
+        # cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/hetzner.pwd --skip-tags debug -e '{"server": "localhost", "users": ["phone", "desktop", "u1"]}' 
       
   #  ansible-galaxy collection install community.general   
   # Installing 'community.general:1.2.0' to '/home/jianglibo/.ansible/collections/ansible_collections/community/general'
