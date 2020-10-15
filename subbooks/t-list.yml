@@ -1,0 +1,14 @@
+---
+- name: Configure the server and install required software
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - block:
+      - name: difference scalar value
+        debug:
+          msg: "{{ [1, 2] | difference([1, 3]) }}"
+      - name: difference object value
+        debug:
+          msg: "{{ [{'a': 1}, {'b': 2}] | difference([{'a': 1}, {'b': 3}]) }}"
+
+# ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-list.yml

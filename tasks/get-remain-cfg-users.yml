@@ -10,11 +10,13 @@
         query GetRemainCfgUsers {
             wireguard_cfg(where: {server: {ipv4: {_eq: "{{ vpn_server_ip }}"}}, _and: {state: {_in: [normal, preparing]}}}) {
             id
+            uuid
           }
         }
   register: server_result
 - name: set fact value.
   set_fact:
+    users_with_uuid: ""
     users: "{{ server_result.json.data.wireguard_cfg | map(attribute='id') | map('regex_replace', '^(.*)$', 'user\\1') | list }}"
 - name: print result.
   debug:
