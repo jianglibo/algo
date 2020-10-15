@@ -54,6 +54,10 @@
       copy:
         src: /opt/hetzner.pwd
         dest: /opt/hetzner.pwd
+    - name: install ansible-galaxy collection install azure.azcollection
+      shell: >-
+        source .env/bin/activate &&
+        ansible-galaxy collection install azure.azcollection
     - name: install wireguard
       shell: |
         source .env/bin/activate && 

@@ -1,0 +1,3 @@
+- name: set_fact users
+  set_fact:
+    users: ["1111"]

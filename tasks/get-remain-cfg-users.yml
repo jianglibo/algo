@@ -15,10 +15,10 @@
   register: server_result
 - name: set fact value.
   set_fact:
-    users_list: "{{ server_result.json.data.wireguard_cfg | map(attribute='id') | map('regex_replace', '^(.*)$', 'user\\1') | list }}"
+    users: "{{ server_result.json.data.wireguard_cfg | map(attribute='id') | map('regex_replace', '^(.*)$', 'user\\1') | list }}"
 - name: print result.
   debug:
-    var: users_list
+    var: users
 - name: read old user list
   include_vars:
     file: ../cfg_users_list.json
@@ -32,7 +32,7 @@
 #     dest: ../cfg_users_list_new.json
 - name: write new users_list
   copy:
-    content: "{{ {'users': users_list} }}"
+    content: "{{ {'users': users} }}"
     dest: ../cfg_users_list.json
 
   

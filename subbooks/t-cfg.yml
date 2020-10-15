@@ -35,6 +35,10 @@
       register: users
     - debug:
         var: users
+    - import_tasks: t-task1.yml
+    - name: do users change after import tasks?
+      debug:
+        var: users
   
 
 
