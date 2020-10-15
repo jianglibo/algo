@@ -6,6 +6,8 @@
     - config.cfg
 
   tasks:
+    - name: import tasks
+      import_tasks: ./tasks/get-remain-cfg-users.ym      
     - block:
         - name: Get list of installed config files
           find:

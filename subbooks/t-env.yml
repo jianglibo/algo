@@ -1,0 +1,28 @@
+---
+- name: Configure the server and install required software
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: display file content
+      debug:
+        msg: "'{{ lookup('env', 'FC') }}' is the HOME environment variable."
+    - name: Include vars of stuff.yaml into the 'stuff' variable (2.2).
+      include_vars:
+        file: iv.yml
+        name: stuff
+
+    # - name: Load a variable file based on the OS type, or a default if not found. Using free-form to specify the file.
+      # include_vars: "{{ lookup('first_found', params) }}"
+      # include_vars: "{{ lookup('file', 't-cfg.yml') }}"
+      # vars:
+      #   params:
+      #     files:
+      #       - '{{ansible_distribution}}.yaml'
+      #       - '{{ansible_os_family}}.yaml'
+      #       - default.yaml
+      #     paths:
+      #       - 'vars'
+    - debug:
+        var: stuff
+# export FC=linoxide.com
+  # ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-env.yml

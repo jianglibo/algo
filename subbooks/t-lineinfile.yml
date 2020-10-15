@@ -1,0 +1,23 @@
+---
+- name: Configure the server and install required software
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - block:
+      - name: Add a line to a file if the file does not exist, without passing regexp
+        lineinfile:
+          path: this_vpn_server_ip
+          line: 192.168.1.99 foo.lab.net foo1
+          create: yes
+      - name: display file content
+        debug:
+          var: fc
+      - name: remove file
+        file:
+          path: this_vpn_server_ip
+          state: absent
+      vars:
+        fc: "{{ lookup('file', 'this_vpn_server_ip') }}"
+
+  # ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-lineinfile.yml

@@ -30,5 +30,12 @@
         var: hetzner
     - debug:
         var: hasura
+    - name: a command output
+      command: echo abc
+      register: users
+    - debug:
+        var: users
+  
 
 
+# ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-cfg.yml

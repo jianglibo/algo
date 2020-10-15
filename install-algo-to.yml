@@ -25,13 +25,11 @@
         var: ansible_facts.python
     - debug:
         msg: "{{ algo_extra_var | to_json }}"
-    # - assert:
-    #     that:
-    #       - "'foo' in 'some_command_result.stdout,foo'"
-    #       - ansible_facts.python.executable == '/usr/bin/python3'
-    #     fail_msg: "{{ansible_facts.python.executable}} is wrong"
-    #     quiet: yes
-    #     success_msg: "'my_param' is between 0 and 100"
+    - name: save vpn_server_id for late use in cron jobs.
+      lineinfile:
+        path: this_vpn_server_ip
+        line: "{{ vpn_server_ip }}"
+        create: yes
     - name: install git and python3-virtualenv
       apt:
         pkg:

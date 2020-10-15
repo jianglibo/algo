@@ -1,0 +1,39 @@
+CREATE OR REPLACE FUNCTION update_wireguard_state_func() RETURNS trigger AS $expired_at$
+    DECLARE
+        n timestamp := now();
+        nn timestamp := n + interval '10 days';
+        server_cfg_num remain_cfg_on_server;
+        cnt int;
+    BEGIN
+        UPDATE 
+            wireguard_cfg w
+        SET 
+            state = 'expired'
+        FROM 
+            account a
+        WHERE 
+            w.account_id = a.id and a.expired_at > n and a.expired_at < nn;
+
+        UPDATE 
+            wireguard_cfg w
+        SET 
+            state = 'abandoned'
+        FROM 
+            account a
+        WHERE 
+            w.account_id = a.id and a.expired_at > nn;
+
+        RAISE NOTICE 'Get remain cfgs...';
+        FOR server_cfg_num IN
+            SELECT * FROM remain_cfg_on_server
+        LOOP
+            cnt := 200 - server_cfg_num.count
+            FOR _i IN 1..cnt LOOP
+	            -- i will take on the values 1,2,3,4,5,6,7,8,9,10 within the loop
+		        INSERT INTO wireguard_cfg(server_id) VALUES (server_cfg_num.server_id);
+            END LOOP;
+        END LOOP;
+          
+        RETURN NEW;
+    END;
+$expired_at$ LANGUAGE plpgsql;
