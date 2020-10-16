@@ -5,6 +5,9 @@
   vars_files:
     - ../vars/sec.yml
     - ../vars/cfg.yml
+  # environment:
+  #   AZURE_AD_USER: configs-uploader@jianglibohotmail.onmicrosoft.com
+  #   AZURE_PASSWORD: "{{ uploader_pwd }}"
   tasks:
     - name: import tasks
       import_tasks: ../tasks/upload-conf.yml

@@ -3,16 +3,16 @@
     resource_group: blob-resource-group
     storage_account_name: respme
     container: conf
-    # client_id: "{{uploader_sp_client_id}}"
-    # subscription_id: "{{subscription_id}}"
-    # tenant: jianglibohotmail.onmicrosoft.com
+    client_id: "{{uploader_sp_client_id}}"
+    subscription_id: "{{subscription_id}}"
+    tenant: jianglibohotmail.onmicrosoft.com
     # tenant: "{{tenant_id}}"
-    # secret: "{{uploader_sp_pwd}}"
+    secret: "{{uploader_sp_pwd}}"
     ad_user: configs-uploader@jianglibohotmail.onmicrosoft.com
     password: "{{ uploader_pwd }}"
     blob: t1.plpgsql
     src: ./plpgsql/t1.plpgsql
-    auth_source: env
+    # auth_source: env
     # public_access: container
     # content_type: 'application/image'
   register: server_result
