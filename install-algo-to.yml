@@ -57,7 +57,8 @@
     - name: install ansible-galaxy collection install azure.azcollection
       shell: >-
         source .env/bin/activate &&
-        ansible-galaxy collection install azure.azcollection
+        ansible-galaxy collection install azure.azcollection &&
+        python3 -m pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt
     - name: install wireguard
       shell: |
         source .env/bin/activate && 

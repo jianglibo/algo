@@ -1,4 +1,4 @@
-- name: Get data from Github
+- name: insert server.
   uri:
     url: "{{ gl_endpoint }}"
     method: POST

@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: false
+  tags: always
+  vars_files:
+    - ../vars/sec.yml
+    - ../vars/cfg.yml
+  tasks:
+    - name: import tasks
+      import_tasks: ../tasks/upload-conf.yml
+
+# ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/upload-conf.yml
+# ['', '/usr/lib/python38.zip', '/usr/lib/python3.8', '/usr/lib/python3.8/lib-dynload', '/home/jianglibo/algo/.env/lib/python3.8/site-packages']
