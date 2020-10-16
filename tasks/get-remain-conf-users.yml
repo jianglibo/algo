@@ -1,0 +1,53 @@
+- name: Get data from Github
+  uri:
+    url: "{{ gl_endpoint }}"
+    method: POST
+    headers:
+      x-hasura-admin-secret: "{{ hasura_admin }}"
+    body_format: json
+    body:
+      query: |
+        query GetRemainCfgUsers {
+          conf_users(where: {server: {ipv4: {_eq: "{{ vpn_server_ip }}"}}, _and: {state: {_in: [normal, preparing]}}}) {
+            id
+          }
+        }
+  register: fetch_users_result
+- name: print out fetch_users_result
+  debug:
+    var: fetch_users_result
+- name: read old user list, file format is ["user1", "user2"]
+  include_vars:
+    file: ../cfg_users_list.json
+    name: old_users_list
+- name: set fact users.
+  set_fact:
+    # users: "{{ fetch_users_result.json.data.wireguard_cfg | map(attribute='id') | map('regex_replace', '^(.*)$', 'user\\1') | list }}"
+    # []
+    users: "{{ fetch_users_result.json.data.conf_users | map(attribute='id') | list}}"
+    # users_with_uuid: |
+    #   [
+    #     {% for u in fetch_users_result.json.data.wireguard_cfg %}
+    #       {{ {
+    #         "id": "user%s"|format(u.id),
+    #         "uuid": u.uuid
+    #       } }},
+    #     {% endfor %}
+    #   ]
+- name: set fact users_diff.
+  set_fact:
+    users_diff: "{{ users | difference(old_users_list.users) }}"
+- name: stop play if no new users.
+  block:
+    - name: "end play if no new users."
+      debug:
+        msg: "nothing to do, ending play"
+    - meta: end_play
+  when: (users_diff | default([])) | length == 0
+
+- name: write new users_list
+  copy:
+    content: "{{ {'users': users} }}"
+    dest: ../cfg_users_list.json
+
+# https://yaml-multiline.info/

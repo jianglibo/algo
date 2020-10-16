@@ -10,5 +10,17 @@
       - name: difference object value
         debug:
           msg: "{{ [{'a': 1}, {'b': 2}] | difference([{'a': 1}, {'b': 3}]) }}"
+      - set_fact:
+          users: "{{ [{'id': 1, 'uuid': 'eeee'}, {'id': 2, 'uuid': 'ddddd'}] }}"
+      - debug:
+          var: users
+      - debug:
+          msg: |
+            [{% for u in users %}
+              {{ {
+                "id": "user%s"|format(u.id),
+                "uuid": u.uuid
+              } }},
+            {% endfor %}]
 
 # ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-list.yml
