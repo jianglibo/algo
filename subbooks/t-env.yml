@@ -24,5 +24,16 @@
       #       - 'vars'
     - debug:
         var: stuff
+    - name: full template
+      set_fact:
+        v: |
+          [
+          {% for i in [['a', 1],['b', 2],['c', 3]] %}
+            {"{{i.0}}": {{i.1}}},
+          {% endfor %}]
+
+    - name: use full tempalte
+      debug:
+        var: v[0].a1
 # export FC=linoxide.com
   # ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-env.yml
