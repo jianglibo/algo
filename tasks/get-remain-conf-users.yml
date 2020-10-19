@@ -61,5 +61,5 @@
       dest: "{{ ouf }}"
 
   vars:
-    ouf: cfg_users_list.json
+    ouf: "{{ respme_base }}/writable/cfg_users_list.json"
   # https://yaml-multiline.info/

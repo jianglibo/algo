@@ -11,6 +11,14 @@
   tasks:
     - name: import tasks
       import_tasks: ../tasks/upload-conf.yml
+      vars:
+        users: ["desktop"]
+        vpn_server_ip: "localhost"
 
-# ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/upload-conf.yml
+# ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"in_test": true}' subbooks/upload-conf.yml
 # ['', '/usr/lib/python38.zip', '/usr/lib/python3.8', '/usr/lib/python3.8/lib-dynload', '/home/jianglibo/algo/.env/lib/python3.8/site-packages']
+# four files: 
+# configs/ip/wireguard/apple/ios/{uname}.mobileconfig
+# configs/ip/wireguard/apple/macos/{uname}.mobileconfig
+# configs/ip/wireguard/{uname}.conf
+# configs/ip/wireguard/{uname}.png

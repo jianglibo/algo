@@ -36,4 +36,4 @@
       debug:
         var: v[0].a1
 # export FC=linoxide.com
-  # ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-env.yml
+  # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd subbooks/t-env.yml

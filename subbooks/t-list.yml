@@ -23,4 +23,4 @@
               } }},
             {% endfor %}]
 
-# ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-list.yml
+# ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd subbooks/t-list.yml

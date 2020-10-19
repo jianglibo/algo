@@ -8,4 +8,4 @@
   tasks:
     - name: import tasks
       import_tasks: ../tasks/get-remain-conf-users.yml
-# ansible-playbook --vault-id hetzner@/opt/hetzner.pwd -e '{"vpn_server_ip": "3.3.3.3"}' subbooks/get-remain-conf-users.yml -vv
+# ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"vpn_server_ip": "3.3.3.3"}' subbooks/get-remain-conf-users.yml -vv

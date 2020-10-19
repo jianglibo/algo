@@ -53,8 +53,8 @@
         creates: ~/algo/.env
     - name: copy vault password
       copy:
-        src: /opt/hetzner.pwd
-        dest: /opt/hetzner.pwd
+        src: /opt/respme/hetzner.pwd
+        dest: /opt/respme/hetzner.pwd
     - name: install ansible-galaxy collection install azure.azcollection
       shell: >-
         source .env/bin/activate &&
@@ -66,7 +66,7 @@
     - name: install wireguard
       shell: |
         source .env/bin/activate && 
-        ./algo --vault-id hetzner@/opt/hetzner.pwd -e '{{ algo_extra_var | to_json }}'
+        ./algo --vault-id hetzner@/opt/respme/hetzner.pwd -e '{{ algo_extra_var | to_json }}'
       args:
         chdir: ~/algo
         executable: /bin/bash
@@ -78,7 +78,7 @@
     - name: create init users, this is run in ansible script.
       shell: |
         source .env/bin/activate && 
-        ./algo update-users --vault-id hetzner@/opt/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'
+        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'
       args:
         chdir: ~/algo
         executable: /bin/bash
@@ -119,8 +119,8 @@
       cron:
         name: "check dirs"
         minute: "*/5"
-        job: "cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'"
-        # cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/hetzner.pwd --skip-tags debug -e '{"server": "localhost", "users": ["phone", "desktop", "u1"]}' 
+        job: "cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'"
+        # cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags debug -e '{"server": "localhost", "users": ["phone", "desktop", "u1"]}' 
       
   #  ansible-galaxy collection install community.general   
   # Installing 'community.general:1.2.0' to '/home/jianglibo/.ansible/collections/ansible_collections/community/general'

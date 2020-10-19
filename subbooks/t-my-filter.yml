@@ -8,4 +8,4 @@
         debug:
           msg: "{{ 'abc'| a_filter }}"
 
-# ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-my-filter.yml
+# ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd subbooks/t-my-filter.yml

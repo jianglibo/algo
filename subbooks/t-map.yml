@@ -14,4 +14,4 @@
         users_list: "{{ [{'id': 1}, {'id': 2}] | map(attribute='id') | map('regex_replace', '^(.*)$', 's-\\1') | list }}" 
 
 # export FC=linoxide.com
-  # ansible-playbook --vault-id hetzner@/opt/hetzner.pwd subbooks/t-map.yml
+  # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd subbooks/t-map.yml

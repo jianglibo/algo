@@ -1,0 +1,11 @@
+- block:
+  - name: some item failed.
+    debug:
+      msg: "{{ 3 / item }}"
+    ignore_errors: true
+    # ignore_failed: true
+    # register: result
+    # failed_when: "'xxxxx' in result.msg"
+  # - debug:
+  #     var: result
+

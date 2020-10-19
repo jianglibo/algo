@@ -1,0 +1,30 @@
+---
+- name: test loop
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - block:
+      - name: set fect.
+        set_fact:
+          o:
+            - src: "{{ prefix }}/apple/ios/{{ item }}.mobileconfig"
+              blob: "apple/ios/{{ item }}.mobileconfig"
+            - src: "{{ prefix }}/apple/macos/{{ item }}.mobileconfig"
+              blob: "apple/macos/{{ item }}.mobileconfig"
+            - src: "{{ prefix }}/{{ item }}.conf"
+              blob: "{{ item }}.conf"
+            - src: "{{ prefix }}/{{ item }}.png"
+              blob: "{{ item }}.png"
+        loop: "{{ users }}"
+        register: producted_items
+      - name: print producted_items
+        debug:
+          msg: " {{ producted_items.results | map(attribute='ansible_facts.o') | list | flatten }}"
+      vars:
+        users: ["desktop", "laptop"]
+        prefix: "{{ '../configs' if in_test is defined else 'configs' }}/{{ vpn_server_ip }}/wireguard"
+        vpn_server_ip: "localhost"
+
+
+
+# ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"in_test": true}' subbooks/t-loop.yml
