@@ -16,7 +16,7 @@
       server: localhost
       endpoint: "{{ vpn_server_ip }}"
       store_pki: true
-      users: []
+      # users: []
   tasks:
     # - debug: var=inventory_hostname
     # - debug: var=ansible_hostname
@@ -71,6 +71,17 @@
         chdir: ~/algo
         executable: /bin/bash
         creates: ~/algo/configs/localhost
+    - name: notify hub that server is created.
+      import_tasks: ../tasks/server-create-ql.yml
+    # - name: get remain conf users.
+    #   import_tasks: ../tasks/get-remain-conf-users.yml
+    - name: create init users, this is run in ansible script.
+      shell: |
+        source .env/bin/activate && 
+        ./algo update-users --vault-id hetzner@/opt/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'
+      args:
+        chdir: ~/algo
+        executable: /bin/bash
     - name: Creates an entry like "SHELL=/bin/bash" on top of crontab
       cron:
         name: SHELL
@@ -102,7 +113,7 @@
     - name: Allow all access to tcp port 80
       community.general.ufw:
         rule: allow
-        port: '51820'
+        port: "{{ wireguard_port }}"
         proto: udp
     - name: add cron
       cron:

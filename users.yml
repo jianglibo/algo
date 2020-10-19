@@ -4,10 +4,15 @@
   tags: always
   vars_files:
     - config.cfg
+    - vars/cfg.yml
+    - vars/sec.yml
 
   tasks:
     - name: import tasks
-      import_tasks: ./tasks/get-remain-cfg-users.ym      
+      import_tasks: ./tasks/get-remain-conf-users.yml
+      when: run_get_remains_conf_users
+    - fail:
+        msg: "run_get_remains_conf_users: {{ run_get_remains_conf_users }}"
     - block:
         - name: Get list of installed config files
           find:
