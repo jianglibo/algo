@@ -1,5 +1,7 @@
+# - debug:
+#     var: subscription_id
 - name: upload conf.
-  azure_rm_storageblob:
+  azure.azcollection.azure_rm_storageblob:
     resource_group: blob-resource-group
     storage_account_name: respme
     container: conf
@@ -8,10 +10,10 @@
     tenant: jianglibohotmail.onmicrosoft.com
     # tenant: "{{tenant_id}}"
     secret: "{{uploader_sp_pwd}}"
-    ad_user: configs-uploader@jianglibohotmail.onmicrosoft.com
-    password: "{{ uploader_pwd }}"
+    # ad_user: configs-uploader@jianglibohotmail.onmicrosoft.com
+    # password: "{{ uploader_pwd }}"
     blob: t1.plpgsql
-    src: ./plpgsql/t1.plpgsql
+    src: ../plpgsql/t1.plpgsql
     # auth_source: env
     # public_access: container
     # content_type: 'application/image'
