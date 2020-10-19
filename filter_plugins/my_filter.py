@@ -1,8 +1,7 @@
 class FilterModule(object):
     def filters(self):
         return {
-            'a_filter': self.a_filter,
-            'another_filter': self.b_filter
+            'a_filter': self.a_filter
         }
 
     def a_filter(self, a_variable):

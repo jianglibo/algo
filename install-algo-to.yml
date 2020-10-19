@@ -16,6 +16,7 @@
       server: localhost
       endpoint: "{{ vpn_server_ip }}"
       store_pki: true
+      users: []
   tasks:
     # - debug: var=inventory_hostname
     # - debug: var=ansible_hostname
@@ -59,6 +60,9 @@
         source .env/bin/activate &&
         ansible-galaxy collection install azure.azcollection &&
         python3 -m pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt
+      args:
+        chdir: ~/algo
+        executable: /bin/bash
     - name: install wireguard
       shell: |
         source .env/bin/activate && 
