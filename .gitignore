@@ -9,3 +9,4 @@ venvs/*
 !venvs/.gitinit
 localhost/
 *.pyc
+**/cfg_users_list.json
