@@ -1,0 +1,42 @@
+- block:
+  - name: caculate files by users.
+    set_fact:
+      one_four:
+        - src: "{{ prefix }}/apple/ios/{{ item }}.mobileconfig"
+          blob: "apple/ios/{{ item }}.mobileconfig"
+        - src: "{{ prefix }}/apple/macos/{{ item }}.mobileconfig"
+          blob: "apple/macos/{{ item }}.mobileconfig"
+        - src: "{{ prefix }}/{{ item }}.conf"
+          blob: "{{ item }}.conf"
+        - src: "{{ prefix }}/{{ item }}.png"
+          blob: "{{ item }}.png"
+  - debug:
+      var: one_four
+  - name: upload conf.
+    azure.azcollection.azure_rm_storageblob:
+      resource_group: blob-resource-group
+      storage_account_name: respme
+      container: conf
+      client_id: "{{uploader_sp_client_id}}"
+      subscription_id: "{{subscription_id}}"
+      tenant: "{{ azure_tenant }}"
+      secret: "{{uploader_sp_pwd}}"
+      # ad_user: configs-uploader@jianglibohotmail.onmicrosoft.com
+      # password: "{{ uploader_pwd }}"
+      blob: "{{ one_file.blob }}"
+      src: "{{ one_file.src }}"
+      # auth_source: env
+      # public_access: container
+      # content_type: 'application/image'
+    register: upload_result
+    loop: "{{ one_four }}"
+    loop_control:
+      loop_var: one_file
+  - name: change variables in parent scope.
+    set_fact:
+      successed_uploads: "{{ successed_uploads + [item] if upload_result.changed else successed_uploads }}"
+  - name: server result
+    debug:
+      msg: "{{ upload_result }}"
+
+# https://yaml-multiline.info/

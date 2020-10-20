@@ -4,6 +4,9 @@
   gather_facts: false
   tasks:
     - block:
+      - name: create an empty array.
+        set_fact:
+          successes: []
       - name: some item failed.
         include_tasks: block-with-error.yml
         loop: "{{ numbers }}"
@@ -13,6 +16,8 @@
         # failed_when: "'xxxxx' in result.msg"
       - debug:
           var: result
+      - debug:
+          var: successes
       vars:
         numbers: [0,2,1,3]
 

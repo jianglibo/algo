@@ -1,4 +1,7 @@
 - block:
+  - name: change variables in parent scope.
+    set_fact:
+      successes: "{{ successes + [item] }}"
   - name: some item failed.
     debug:
       msg: "{{ 3 / item }}"

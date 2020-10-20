@@ -17,8 +17,9 @@
             removed
           }
         }
-  register: server_result
-- debug:
-    msg: "{{ server_result.json.data.insert_server_one }}"
+  register: server_create_result
+- name: print server create result.
+  debug:
+    msg: "{{ server_create_result.json.data.insert_server_one }}"
 
 # https://yaml-multiline.info/

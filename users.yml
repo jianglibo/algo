@@ -8,11 +8,6 @@
     - vars/sec.yml
 
   tasks:
-    - name: import tasks
-      import_tasks: ./tasks/get-remain-conf-users.yml
-      when: run_get_remains_conf_users
-    - fail:
-        msg: "run_get_remains_conf_users: {{ run_get_remains_conf_users }}"
     - block:
         - name: Get list of installed config files
           find:
@@ -99,6 +94,9 @@
     - "configs/{{ inventory_hostname }}/.config.yml"
 
   tasks:
+    - name: import tasks
+      import_tasks: ./tasks/get-remain-conf-users.yml
+      # when: run_get_remains_conf_users
     - block:
       - import_role:
           name: common
@@ -125,3 +123,10 @@
         tags: always
       rescue:
         - include_tasks: playbooks/rescue.yml
+    - name: application block
+      block:
+        - name: upload new conf file to azuer
+          import_tasks: tasks/upload_conf.yml
+        - name: update conf users.
+          import_tasks: tasks/update-conf-users.yml
+          when: (succeeded_uploads | default([])) | length == 0

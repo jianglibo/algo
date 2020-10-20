@@ -78,7 +78,7 @@
     - name: create init users, this is run in ansible script.
       shell: |
         source .env/bin/activate && 
-        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'
+        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} }}'
       args:
         chdir: ~/algo
         executable: /bin/bash
@@ -117,10 +117,10 @@
         proto: udp
     - name: add cron
       cron:
-        name: "check dirs"
-        minute: "*/5"
-        job: "cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} | combine({'users': users | to_json}) }}'"
-        # cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags debug -e '{"server": "localhost", "users": ["phone", "desktop", "u1"]}' 
+        name: "update conf user state."
+        minute: "0"
+        hour: "0/6"
+        job: "cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} }}'"
       
   #  ansible-galaxy collection install community.general   
   # Installing 'community.general:1.2.0' to '/home/jianglibo/.ansible/collections/ansible_collections/community/general'
