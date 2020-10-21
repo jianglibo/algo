@@ -5,6 +5,9 @@
   # gather_facts: false
   hosts: vpn-server
         # ./algo -e '{"provider": "local", "ondemand_cellular": "N", "ondemand_wifi": "N", "ipsec_enabled": false, "dns_adblocking": "N", "ssh_tunneling": "N", "server": "localhost", "endpoint": "94.130.169.110"}'
+  vars_files:
+    - vars/sec.yml
+    - vars/cfg.yml
   vars:
     algo_extra_var:
       provider: local
@@ -16,6 +19,7 @@
       server: localhost
       endpoint: "{{ vpn_server_ip }}"
       store_pki: true
+    respme_base: /opt/respme
       # users: []
   tasks:
     # - debug: var=inventory_hostname
@@ -26,9 +30,13 @@
         var: ansible_facts.python
     - debug:
         msg: "{{ algo_extra_var | to_json }}"
+    - name: create base directory.
+      file:
+        path: "{{ respme_base }}"
+        state: directory
     - name: save vpn_server_id for late use in cron jobs.
       lineinfile:
-        path: this_vpn_server_ip
+        path: "{{ respme_base }}/this_vpn_server_ip"
         line: "{{ vpn_server_ip }}"
         create: yes
     - name: install git and python3-virtualenv
@@ -53,8 +61,8 @@
         creates: ~/algo/.env
     - name: copy vault password
       copy:
-        src: /opt/respme/hetzner.pwd
-        dest: /opt/respme/hetzner.pwd
+        src: "{{ respme_base }}/hetzner.pwd"
+        dest: "{{ respme_base }}/hetzner.pwd"
     - name: install ansible-galaxy collection install azure.azcollection
       shell: >-
         source .env/bin/activate &&
@@ -72,13 +80,13 @@
         executable: /bin/bash
         creates: ~/algo/configs/localhost
     - name: notify hub that server is created.
-      import_tasks: ../tasks/server-create-ql.yml
+      import_tasks: tasks/server-create-ql.yml
     # - name: get remain conf users.
     #   import_tasks: ../tasks/get-remain-conf-users.yml
     - name: create init users, this is run in ansible script.
       shell: |
         source .env/bin/activate && 
-        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} }}'
+        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost', 'vpn_server_ip': vpn_server_ip} }}'
       args:
         chdir: ~/algo
         executable: /bin/bash
@@ -120,7 +128,7 @@
         name: "update conf user state."
         minute: "0"
         hour: "0/6"
-        job: "cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost'} }}'"
+        job: "cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost', 'vpn_server_ip': vpn_server_ip} }}'"
       
   #  ansible-galaxy collection install community.general   
   # Installing 'community.general:1.2.0' to '/home/jianglibo/.ansible/collections/ansible_collections/community/general'

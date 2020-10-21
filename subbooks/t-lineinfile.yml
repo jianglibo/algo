@@ -17,7 +17,11 @@
         file:
           path: this_vpn_server_ip
           state: absent
+      - name: string concat
+        debug:
+          msg: "{{ respme_base + '/this_vpn_server_ip' }}"
       vars:
-        fc: "{{ lookup('file', 'this_vpn_server_ip') }}"
+        respme_base: "abc"
+        fc: "{{ lookup('file', rempme_base + '/this_vpn_server_ip') }}"
 
   # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd subbooks/t-lineinfile.yml
