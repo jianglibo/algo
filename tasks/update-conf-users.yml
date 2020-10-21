@@ -1,15 +1,4 @@
 - block:
-  - name: construct body.
-    set_fact:
-      update_users_body: |
-          mutation SetConfUserNormal {
-            update_conf_users(where: {id: {_in: {{ successed_uploads | to_json }}}}, _set: {state: normal}) {
-            affected_rows
-            }
-          }
-  - name: print updated users body.
-    debug:
-      var: update_users_body
   - name: update conf users.
     uri:
       url: "{{ gl_endpoint }}"
@@ -18,7 +7,13 @@
         x-hasura-admin-secret: "{{ hasura_admin }}"
       body_format: json
       body:
-        query: update_users_body
+        query: |
+          mutation SetConfUserNormal {
+            update_conf_users(where: {id: {_in: {{ successed_uploads | to_json }}}}, _set: {state: normal}) {
+            affected_rows
+            }
+          }
+
     register: update_conf_users_result
 - name: print update_conf_users_result
   debug:
