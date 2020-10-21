@@ -1,2 +1,4 @@
 gl_endpoint: https://communal-ghost-18.hasura.app/v1/graphql
 azure_tenant: jianglibohotmail.onmicrosoft.com
+respme_base: /opt/respme
+previous_user_list: /opt/respme/writable/cfg_users_list.json

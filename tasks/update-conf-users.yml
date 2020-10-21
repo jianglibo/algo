@@ -20,3 +20,7 @@
 - name: print update_conf_users_result
   debug:
     msg: "{{ update_conf_users_result.json.data.insert_server_one }}"
+- name: write new users_list
+  copy:
+    content: "{{ {'users': users} }}"
+    dest: "{{ previous_user_list }}"

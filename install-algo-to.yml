@@ -1,6 +1,7 @@
 ---
 - name: Add vpn_server_ip to vpn-server
   import_playbook: prepare-group.yml
+  tags: always
 - name: install algo in target server.
   # gather_facts: false
   hosts: vpn-server
@@ -23,6 +24,9 @@
     respme_base: /opt/respme
       # users: []
   tasks:
+    - name: set random wireguard_port number.
+      set_fact:
+        wireguard_port: "{{ 51821 | random(start=1024) }}"
     # - debug: var=inventory_hostname
     # - debug: var=ansible_hostname
     - debug:
@@ -137,7 +141,7 @@
         - name: reset users list to empty.
           copy:
             content: '{"users": []}'
-            dest: "{{ ouf }}"
+            dest: "{{ previous_user_list }}"
         - name: create init users, this is run in ansible script.
           shell: >
             source .env/bin/activate && 
@@ -146,8 +150,6 @@
             chdir: ~/algo
             executable: /bin/bash
       tags: force-update-users
-      vars:
-        ouf: "{{ respme_base }}/writable/cfg_users_list.json"
       
   #  ansible-galaxy collection install community.general   
   # Installing 'community.general:1.2.0' to '/home/jianglibo/.ansible/collections/ansible_collections/community/general'

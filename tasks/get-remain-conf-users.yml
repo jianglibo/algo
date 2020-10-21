@@ -17,18 +17,18 @@
   - name: print out fetch_users_result
     debug:
       var: fetch_users_result
-  - name: Check that the ouf exists
+  - name: Check that the previous_user_list file exists
     stat:
-      path: "{{ ouf }}"
+      path: "{{ previous_user_list }}"
     register: stat_result
   - name: create empty user file.
     copy:
       content: '{"users": []}'
-      dest: "{{ ouf }}"
+      dest: "{{ previous_user_list }}"
     when: not stat_result.stat.exists
   - name: read old user list, file format is ["user1", "user2"]
     include_vars:
-      file: "{{ ouf }}"
+      file: "{{ previous_user_list }}"
       name: old_users_list
   - name: set fact users.
     set_fact:
@@ -55,11 +55,7 @@
       - meta: end_play
     when: (users_diff | default([])) | length == 0
 
-  - name: write new users_list
-    copy:
-      content: "{{ {'users': users} }}"
-      dest: "{{ ouf }}"
-
-  vars:
-    ouf: "{{ respme_base }}/writable/cfg_users_list.json"
-  # https://yaml-multiline.info/
+  # - name: write new users_list
+  #   copy:
+  #     content: "{{ {'users': users} }}"
+  #     dest: "{{ previous_user_list }}"

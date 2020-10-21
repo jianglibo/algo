@@ -12,5 +12,3 @@
       msg: "{{ successed_uploads }}"
   vars:
     prefix: "{{'../configs' if in_test is defined else 'configs' }}/{{ vpn_server_ip }}/wireguard"
-
-# https://yaml-multiline.info/
