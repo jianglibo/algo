@@ -20,6 +20,10 @@
       - name: string concat
         debug:
           msg: "{{ respme_base + '/this_vpn_server_ip' }}"
+      - name: test key in dict.
+        debug:
+          msg: "a.b not in: {{ 'a.b' in {'a': {'b': 1}} }}, but a in: {{ 'a' in {'a': {'b': 1}} }}, {{ {'a': {'b': 1}}['a'] }}"
+
       vars:
         respme_base: "abc"
         fc: "{{ lookup('file', rempme_base + '/this_vpn_server_ip') }}"

@@ -18,8 +18,10 @@
           }
         }
   register: server_create_result
+  ignore_errors: true
 - name: print server create result.
   debug:
     msg: "{{ server_create_result.json.data.insert_server_one }}"
+  when: "{{ 'data' in server_create_result.json}}"
 
 # https://yaml-multiline.info/

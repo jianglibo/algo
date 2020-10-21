@@ -81,12 +81,13 @@
         creates: ~/algo/configs/localhost
     - name: notify hub that server is created.
       import_tasks: tasks/server-create-ql.yml
-    # - name: get remain conf users.
-    #   import_tasks: ../tasks/get-remain-conf-users.yml
+    - name: debug env
+      debug:
+        var: playbook_dir
     - name: create init users, this is run in ansible script.
-      shell: |
+      shell: >
         source .env/bin/activate && 
-        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost', 'vpn_server_ip': vpn_server_ip} }}'
+        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {"server": "localhost", 'vpn_server_ip': vpn_server_ip} }}'
       args:
         chdir: ~/algo
         executable: /bin/bash

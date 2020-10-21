@@ -126,7 +126,7 @@
     - name: application block
       block:
         - name: upload new conf file to azuer
-          import_tasks: tasks/upload_conf.yml
+          import_tasks: tasks/upload-conf.yml
         - name: update conf users.
           import_tasks: tasks/update-conf-users.yml
           when: (succeeded_uploads | default([])) | length == 0
