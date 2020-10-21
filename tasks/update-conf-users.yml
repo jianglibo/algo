@@ -20,6 +20,9 @@
 - name: print update_conf_users_result
   debug:
     var: update_conf_users_result
+- name: print data field.
+  debug:
+    msg: "{{ update_conf_users_result.json.data }}"
 - name: write new users_list
   copy:
     content: "{{ {'users': users} }}"
