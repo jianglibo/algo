@@ -19,7 +19,7 @@
     register: update_conf_users_result
 - name: print update_conf_users_result
   debug:
-    msg: "{{ update_conf_users_result.json.data.insert_server_one }}"
+    var: update_conf_users_result
 - name: write new users_list
   copy:
     content: "{{ {'users': users} }}"
