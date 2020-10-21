@@ -10,8 +10,9 @@
           blob: "{{ item }}.conf"
         - src: "{{ prefix }}/{{ item }}.png"
           blob: "{{ item }}.png"
-  - debug:
-      var: one_four
+  - name: what's ansible_python_interpreter?
+    debug:
+      var: ansible_python_interpreter
   - name: upload conf.
     azure.azcollection.azure_rm_storageblob:
       resource_group: blob-resource-group
