@@ -7,6 +7,9 @@
             affected_rows
             }
           }
+  - name: print updated users body.
+    debug:
+      var: update_users_body
   - name: update conf users.
     uri:
       url: "{{ gl_endpoint }}"
