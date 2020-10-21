@@ -6,6 +6,7 @@
   hosts: vpn-server
         # ./algo -e '{"provider": "local", "ondemand_cellular": "N", "ondemand_wifi": "N", "ipsec_enabled": false, "dns_adblocking": "N", "ssh_tunneling": "N", "server": "localhost", "endpoint": "94.130.169.110"}'
   vars_files:
+    - config.cfg
     - vars/sec.yml
     - vars/cfg.yml
   vars:
@@ -119,16 +120,16 @@
       community.general.ufw:
         rule: allow
         name: OpenSSH
-    - name: Allow all access to tcp port 80
+    - name: Allow all access to tcp port wireguard_port
       community.general.ufw:
         rule: allow
-        port: "{{ wireguard_port }}"
+        port: "{{ wireguard_port | string }}"
         proto: udp
     - name: add cron
       cron:
         name: "update conf user state."
-        minute: "0"
-        hour: "0/6"
+        minute: "{{ 60 | random }}"
+        hour: "*/6"
         job: "cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{{ {'server': 'localhost', 'vpn_server_ip': vpn_server_ip} }}'"
       
   #  ansible-galaxy collection install community.general   

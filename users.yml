@@ -82,6 +82,9 @@
             ansible_connection: "{% if algo_server == 'localhost' %}local{% else %}ssh{% endif %}"
             ansible_python_interpreter: "/usr/bin/python3"
             CA_password: "{{ CA_password|default(omit) }}"
+        - name: inventory_hostname
+          debug:
+            var: inventory_hostname
       rescue:
         - include_tasks: playbooks/rescue.yml
 
@@ -96,6 +99,7 @@
   tasks:
     - name: import tasks
       import_tasks: ./tasks/get-remain-conf-users.yml
+      tags: update-users
       # when: run_get_remains_conf_users
     - block:
       - import_role:
@@ -130,3 +134,4 @@
         - name: update conf users.
           import_tasks: tasks/update-conf-users.yml
           when: (succeeded_uploads | default([])) | length == 0
+      tags: update-users

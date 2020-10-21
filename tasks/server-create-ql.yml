@@ -22,6 +22,4 @@
 - name: print server create result.
   debug:
     msg: "{{ server_create_result.json.data.insert_server_one }}"
-  when: "{{ 'data' in server_create_result.json}}"
-
-# https://yaml-multiline.info/
+  when: "'data' in server_create_result.json"
