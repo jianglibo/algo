@@ -33,7 +33,7 @@
         msg: "{{ algo_extra_var | to_json }}"
     - name: create base directory.
       file:
-        path: "{{ respme_base }}"
+        path: "{{ respme_base }}/writable"
         state: directory
     - name: save vpn_server_id for late use in cron jobs.
       lineinfile:
