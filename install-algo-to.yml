@@ -132,6 +132,22 @@
         hour: "*/6"
         job: |- 
           cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}'
+    - name: force update all users.
+      block:
+        - name: reset users list to empty.
+          copy:
+            content: '{"users": []}'
+            dest: "{{ ouf }}"
+        - name: create init users, this is run in ansible script.
+          shell: >
+            source .env/bin/activate && 
+            ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}'
+          args:
+            chdir: ~/algo
+            executable: /bin/bash
+      tags: force-update-users
+      vars:
+        ouf: "{{ respme_base }}/writable/cfg_users_list.json"
       
   #  ansible-galaxy collection install community.general   
   # Installing 'community.general:1.2.0' to '/home/jianglibo/.ansible/collections/ansible_collections/community/general'
