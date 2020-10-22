@@ -1,36 +1,37 @@
 CREATE OR REPLACE FUNCTION update_conf_state_func() RETURNS trigger AS $expired_at$
     DECLARE
-        n timestamp := now();
-        nn timestamp := n + interval '10 days';
+        right_now timestamp := now();
+        extended_expire_time timestamp := right_now + interval '10 days';
         server_conf_num remain_conf_on_server;
         cnt int;
+        user_limit int := 250;
     BEGIN
         UPDATE 
-            conf_users w
+            conf_user w
         SET 
             state = 'expired'
         FROM 
             account a
         WHERE 
-            w.account_id = a.id and a.expired_at > n and a.expired_at < nn;
-
+            w.account_id = a.id and a.expired_at <= right_now and (a.expired_at + interval '10 days' ) >= right_now;
+            -- if expired but expired less than 10 days.
         UPDATE 
-            conf_users w
+            conf_user w
         SET 
             state = 'abandoned'
         FROM 
             account a
         WHERE 
-            w.account_id = a.id and a.expired_at > nn;
+            w.account_id = a.id and (a.expired_at + interval '10 days') < right_now;
 
-        RAISE NOTICE 'Get remain cfgs...';
+        RAISE NOTICE 'Create new account...';
         FOR server_conf_num IN
             SELECT * FROM remain_conf_on_server
         LOOP
-            cnt := 200 - server_conf_num.count;
+            cnt := user_limit - server_conf_num.count;
             FOR _i IN 1..cnt LOOP
 	            -- i will take on the values 1,2,3,4,5,6,7,8,9,10 within the loop
-		        INSERT INTO conf_users(server_id) VALUES (server_conf_num.server_id);
+		        INSERT INTO conf_user(server_id) VALUES (server_conf_num.server_id);
             END LOOP;
         END LOOP;
           

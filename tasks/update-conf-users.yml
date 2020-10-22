@@ -9,18 +9,18 @@
       body:
         query: |
           mutation SetConfUserNormal {
-            update_conf_users(where: {id: {_in: {{ successed_uploads | to_json }}}}, _set: {state: normal}) {
+            update_conf_user(where: {id: {_in: {{ successed_uploads | to_json }}}}, _set: {state: normal}) {
             affected_rows
             }
           }
 
-    register: update_conf_users_result
-- name: print update_conf_users_result
+    register: update_conf_user_result
+- name: print update_conf_user_result
   debug:
-    var: update_conf_users_result
+    var: update_conf_user_result
 - name: print data field.
   debug:
-    msg: "{{ update_conf_users_result.json.data }}"
+    msg: "{{ update_conf_user_result.json.data }}"
 - name: write new users_list
   copy:
     content: "{{ {'users': users} }}"

@@ -9,7 +9,7 @@
       body:
         query: |
           query GetRemainCfgUsers {
-            conf_users(where: {server: {ipv4: {_eq: "{{ vpn_server_ip }}"}}, _and: {state: {_in: [normal, preparing]}}}) {
+            conf_user(where: {server: {ipv4: {_eq: "{{ vpn_server_ip }}"}}, _and: {state: {_in: [normal, preparing]}}}) {
               id
             }
           }
@@ -34,7 +34,7 @@
     set_fact:
       # users: "{{ fetch_users_result.json.data.wireguard_cfg | map(attribute='id') | map('regex_replace', '^(.*)$', 'user\\1') | list }}"
       # []
-      users: "{{ fetch_users_result.json.data.conf_users | map(attribute='id') | list}}"
+      users: "{{ fetch_users_result.json.data.conf_user | map(attribute='id') | list}}"
       # users_with_uuid: |
       #   [
       #     {% for u in fetch_users_result.json.data.wireguard_cfg %}

@@ -1,0 +1,28 @@
+CREATE OR REPLACE FUNCTION set_account_expired_at_func() RETURNS trigger AS $expired_at$
+    DECLARE
+        expire_in_days interval := now() + '3 days';
+    BEGIN
+        NEW.expired_at := expire_in_days;
+        RETURN NEW;
+    END;
+$expired_at$ LANGUAGE plpgsql;
+      
+
+CREATE TRIGGER set_account_expired_at_trigger BEFORE INSERT ON account
+      FOR EACH ROW EXECUTE FUNCTION set_account_expired_at_func()
+
+-- we will assign a conf_user to new created account.
+
+CREATE OR REPLACE FUNCTION create_init_conf_for_account_func() RETURNS trigger AS $expired_at$
+    DECLARE
+        one_conf_user conf_user;
+    BEGIN
+        SELECT * INTO one_conf_user FROM conf_user WHERE account_id is NULL AND state = 'normal' LIMIT 1 FOR UPDATE;
+        UPDATE conf_user SET account_id = NEW.id where id = one_conf_user.id;
+        RETURN NULL;
+    END;
+$expired_at$ LANGUAGE plpgsql;
+      
+
+CREATE TRIGGER create_init_conf_for_account_trigger AFTER INSERT ON account
+      FOR EACH ROW EXECUTE FUNCTION create_init_conf_for_account_func();

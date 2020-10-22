@@ -103,7 +103,7 @@
     - name: import tasks
       import_tasks: ./tasks/get-remain-conf-users.yml
       tags: update-users
-      # when: run_get_remains_conf_users
+      # when: run_get_remains_conf_user
     - block:
       - import_role:
           name: common
