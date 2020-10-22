@@ -1,0 +1,30 @@
+- name: upload one conf.
+  block:
+    - name: caculate files by users.
+      set_fact:
+        one_four:
+          - blob: "apple/ios/{{ item }}.mobileconfig"
+          - blob: "apple/macos/{{ item }}.mobileconfig"
+          - blob: "{{ item }}.conf"
+          - blob: "{{ item }}.png"
+    - name: what's ansible_python_interpreter?
+      debug:
+        var: ansible_python_interpreter
+    - name: remove conf.
+      azure.azcollection.azure_rm_storageblob:
+        resource_group: blob-resource-group
+        storage_account_name: respme
+        container: conf
+        client_id: "{{uploader_sp_client_id}}"
+        subscription_id: "{{subscription_id}}"
+        tenant: "{{ azure_tenant }}"
+        secret: "{{uploader_sp_pwd}}"
+        blob: "{{ one_file.blob }}"
+        state: absent
+      register: remove_result
+      loop: "{{ one_four }}"
+      loop_control:
+        loop_var: one_file
+    - name: server result
+      debug:
+        msg: "{{ remove_result }}"

@@ -12,6 +12,6 @@
     - name: import tasks
       import_tasks: ../tasks/update-conf-users.yml
       vars:
-        successed_uploads: ["6f5f4e42-05ff-4225-9d3e-4132121542ff"]
+        successed_blobs: ["6f5f4e42-05ff-4225-9d3e-4132121542ff"]
 
 # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"in_test": true}' subbooks/t-update-conf-users.yml

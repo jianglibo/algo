@@ -1,14 +1,13 @@
-# - debug:
-#     var: subscription_id
-- block:
-  - name: create an empty array.
-    set_fact:
-      successed_uploads: []
-  - name: upload one conf.
-    include_tasks: upload-one-conf.yml
-    loop: "{{ users_diff }}"
-  - name: successed_uploads
-    debug:
-      msg: "{{ successed_uploads }}"
+- name: upload conf
+  block:
+    - name: create an empty array.
+      set_fact:
+        successed_blobs: []
+    - name: upload one conf.
+      include_tasks: upload-one-conf.yml
+      loop: "{{ users_diff }}"
+    - name: successed_blobs
+      debug:
+        msg: "{{ successed_blobs }}"
   vars:
     prefix: "{{'../configs' if in_test is defined else 'configs' }}/{{ vpn_server_ip }}/wireguard"

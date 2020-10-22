@@ -1,0 +1,15 @@
+---
+- name: remove abandoned conf. include confs in azure and users in db.
+  hosts: localhost
+  vars_files:
+    - config.cfg
+    - vars/sec.yml
+    - vars/cfg.yml
+  tasks:
+    - name: get abandoned conf_user ids.
+      import_tasks: tasks/get-abandoned-conf-users.yml
+    - name: remove confs
+      include_tasks: tasks/remove-one-conf.yml
+      loop: "{{ users }}"
+
+# ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd  remove-abandoned-confs.yml

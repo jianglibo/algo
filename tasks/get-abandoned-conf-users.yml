@@ -1,0 +1,27 @@
+- name: get remain conf users from server.
+  block:
+    - name: invoke graphql.
+      uri:
+        url: "{{ gl_endpoint }}"
+        method: POST
+        headers:
+          x-hasura-admin-secret: "{{ hasura_admin }}"
+        body_format: json
+        body:
+          query: |
+            query GetAbandonedConfUsers {
+              conf_user(where: {state: {_eq: abandoned}}) {
+                id
+              }
+            }
+      register: fetch_abandoned_users_result
+    - name: print out fetch_abandoned_users_result
+      debug:
+        var: fetch_abandoned_users_result
+    - name: set users variable.
+      set_fact:
+        users: "{{ fetch_abandoned_users_result.json.data.conf_user | map(attribute='id') | list}}"
+    - name: print out users var.
+      debug:
+        var: users
+
