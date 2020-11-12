@@ -15,6 +15,7 @@
         'dns_encryption "{{ dns_encryption }}"' \
         > /dev/tty
     tags: debug
+    when: not lookup('env', 'IN_CRONTAB')
 
   - name: Install the requirements
     pip:

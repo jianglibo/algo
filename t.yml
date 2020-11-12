@@ -1,0 +1,10 @@
+---
+- name: test when.
+  hosts: localhost
+  tasks:
+    - name: get abandoned conf_user ids.
+      debug:
+        var: you
+      when: not lookup('env', 'IN_CRONTAB')
+
+# ansible-playbook  --vault-id hetzner@/opt/respme/hetzner.pwd  t.yml

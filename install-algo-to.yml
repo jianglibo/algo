@@ -92,7 +92,7 @@
     - name: create init users, this is run in ansible script.
       shell: >
         source .env/bin/activate && 
-        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}' > out.log 2>&1
+        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}'
       args:
         chdir: ~/algo
         executable: /bin/bash
@@ -101,6 +101,11 @@
         name: SHELL
         env: yes
         job: /bin/bash
+    - name: Creates an entry like "IN_CRONTAB=True" on top of crontab
+      cron:
+        name: IN_CRONTAB
+        env: yes
+        job: True
     - name: enable cron log
       lineinfile:
         path: /etc/rsyslog.d/50-default.conf
@@ -135,7 +140,7 @@
         minute: "{{ 60 | random }}"
         hour: "*/6"
         job: |- 
-          cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}'
+          cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}' > out.log 2>&1
     - name: force update all users.
       block:
         - name: reset users list to empty.
