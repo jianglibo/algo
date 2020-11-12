@@ -92,7 +92,7 @@
     - name: create init users, this is run in ansible script.
       shell: >
         source .env/bin/activate && 
-        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}'
+        ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}' > out.log 2>&1
       args:
         chdir: ~/algo
         executable: /bin/bash
