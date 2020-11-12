@@ -29,6 +29,11 @@
 
 - block:
   - block:
+    - name: remove index.txt first. !!!
+      file:
+        path: "{{ wireguard_pki_path }}/index.txt"
+        state: absent
+
     - name: WireGuard user list updated
       lineinfile:
         dest: "{{ wireguard_pki_path }}/index.txt"
