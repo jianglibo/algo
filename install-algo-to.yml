@@ -140,7 +140,7 @@
         minute: "{{ 60 | random }}"
         hour: "*/6"
         job: |- 
-          cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}' > out.log 2>&1
+          cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}' >> out.log 2>&1
     - name: force update all users.
       block:
         - name: reset users list to empty.
