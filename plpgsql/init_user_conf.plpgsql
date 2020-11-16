@@ -1,0 +1,14 @@
+CREATE OR REPLACE FUNCTION create_init_conf_for_account_func() RETURNS trigger AS $expired_at$
+DECLARE
+    one_conf_user conf_user;
+BEGIN
+    SELECT * INTO one_conf_user FROM conf_user AS c WHERE c.account_id is NULL AND c.state = 'normal' LIMIT 1 FOR UPDATE;
+    UPDATE conf_user SET account_id = NEW.id WHERE id = one_conf_user.id;
+    INSERT INTO account_action(email, account_id) VALUES (NEW.email, NEW.id);
+    RETURN NULL;
+END;
+$expired_at$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER create_init_conf_for_account_trigger AFTER INSERT ON account
+      FOR EACH ROW EXECUTE FUNCTION create_init_conf_for_account_func();

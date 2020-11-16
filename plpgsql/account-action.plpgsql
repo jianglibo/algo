@@ -1,0 +1,37 @@
+CREATE OR REPLACE FUNCTION account_action_func() RETURNS trigger AS $expired_at$
+DECLARE
+    one_conf_user conf_user;
+    numbers Integer;
+    already_numbers Integer;
+    remain_numbers Integer;
+    conf_id uuid;
+BEGIN
+    IF NEW.action = 'assign_conf' THEN
+        SELECT count(*) INTO numbers from conf_user AS c where c.account_id = NEW.account_id;
+        IF (numbers = 0 ) THEN
+            SELECT * INTO one_conf_user FROM conf_user AS c WHERE c.account_id is NULL AND c.state = 'normal' LIMIT 1 FOR UPDATE;
+            UPDATE conf_user SET account_id = NEW.account_id WHERE id = one_conf_user.id;
+        END IF;
+    ELSIF NEW.action = 'switch_conf' THEN
+        -- set the current confs to abandoned. then assign new confs.
+        SELECT count(*) INTO already_numbers FROM conf_user AS c WHERE c.account_id = NEW.account_id;
+        SELECT count(*) INTO remain_numbers FROM conf_user AS c WHERE c.account_id is NULL AND c.state = 'normal';
+        IF remain_numbers > already_numbers THEN
+            UPDATE conf_user SET state = 'abandoned', account_id = null WHERE account_id = NEW.account_id;
+            FOR conf_id IN 
+                SELECT c.id FROM conf_user AS c WHERE c.account_id is NULL AND c.state = 'normal' limit already_numbers
+            LOOP
+                UPDATE conf_user SET account_id = NEW.account_id WHERE id = conf_id;
+            END LOOP;
+        ELSE
+            RETURN NULL;
+        END IF;
+    END IF;
+    -- return null will cause affected_rows to be 0
+    RETURN NEW;
+END;
+$expired_at$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER account_action_trigger BEFORE UPDATE ON account_action
+      FOR EACH ROW EXECUTE FUNCTION account_action_func();
