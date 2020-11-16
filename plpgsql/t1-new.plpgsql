@@ -8,7 +8,8 @@ CREATE OR REPLACE FUNCTION update_conf_state_func() RETURNS trigger AS $expired_
         UPDATE 
             conf_user cu
         SET 
-            state = 'abandoned'
+            state = 'abandoned',
+            account_id = null
         FROM 
             account a
         WHERE 
