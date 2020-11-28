@@ -4,6 +4,7 @@
   tags: always
 - name: install algo in target server.
   # gather_facts: false
+  # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"vpn_server_ip": "168.119.166.150"}' install-algo-to.yml
   hosts: vpn-server
         # ./algo -e '{"provider": "local", "ondemand_cellular": "N", "ondemand_wifi": "N", "ipsec_enabled": false, "dns_adblocking": "N", "ssh_tunneling": "N", "server": "localhost", "endpoint": "94.130.169.110"}'
   vars_files:
