@@ -100,6 +100,9 @@
     - "configs/{{ inventory_hostname }}/.config.yml"
 
   tasks:
+    - name: restore port number in users.yml
+      set_fact:
+        wireguard_port: "{{ lookup('file', saved_port_file) | int }}"
     - name: import tasks
       import_tasks: ./tasks/get-remain-conf-users.yml
       tags: update-users

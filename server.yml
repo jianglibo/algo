@@ -5,7 +5,11 @@
   become: true
   vars_files:
     - config.cfg
+    - vars/cfg.yml
   tasks:
+    - name: restore port number in server.yml.
+      set_fact:
+        wireguard_port: "{{ lookup('file', saved_port_file) | int }}"
     - block:
       - name: Wait until the cloud-init completed
         wait_for:

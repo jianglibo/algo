@@ -3,7 +3,6 @@ CREATE OR REPLACE FUNCTION update_conf_state_func() RETURNS trigger AS $expired_
         right_now timestamp := now();
         server_conf_num remain_conf_on_server;
         cnt int;
-        user_limit int := 250;
     BEGIN
         UPDATE 
             conf_user cu
@@ -19,7 +18,7 @@ CREATE OR REPLACE FUNCTION update_conf_state_func() RETURNS trigger AS $expired_
         FOR server_conf_num IN
             SELECT * FROM remain_conf_on_server
         LOOP
-            cnt := user_limit - server_conf_num.count;
+            cnt := server_conf_num.max_conf - server_conf_num.count;
             FOR _i IN 1..cnt LOOP
 	            -- i will take on the values 1,2,3,4,5,6,7,8,9,10 within the loop
 		        INSERT INTO conf_user(server_id) VALUES (server_conf_num.server_id);

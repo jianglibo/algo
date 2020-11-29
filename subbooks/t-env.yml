@@ -4,6 +4,7 @@
   gather_facts: false
   vars_files:
     - ../config.cfg
+    - ../vars/cfg.yml
   tasks:
     - name: display file content
       debug:
@@ -48,5 +49,22 @@
     - name: use full tempalte
       debug:
         var: v[0].a1
+    
+    - name: saved port
+      debug:
+        var: saved_port_file
+    - name: read unexists file.
+      debug:
+        msg: "{{lookup('file', '/etc/foo.taxt') }}"
+      register: command_result
+      ignore_errors: yes
+    - name: error result
+      debug:
+        var: command_result
+
+    - name: set default
+      debug:
+        msg: "{{ max_conf | default(250)}}"
+
 # export FC=linoxide.com
   # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd subbooks/t-env.yml

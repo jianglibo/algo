@@ -8,13 +8,14 @@
     body:
       query: |
         mutation CreateServer {
-          insert_server_one(object: {ipv4: "{{ vpn_server_ip }}", provider: hetzner}) {
+          insert_server_one(object: {ipv4: "{{ vpn_server_ip }}", max_conf: {{ max_conf | default(250)}}, provider: hetzner}) {
             id
             created_at
             ipv4
             provider
             region
             removed
+            max_conf
           }
         }
   register: server_create_result
