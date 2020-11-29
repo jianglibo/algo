@@ -43,9 +43,16 @@
             content: "{{ wireguard_port }}"
             dest: "{{ saved_port_file }}"
       when: not stat_result.stat.exists
-    - name: restore port number install-algo-to.yml
-      set_fact:
-        wireguard_port: "{{ lookup('file', saved_port_file) | int}}"
+    - name: restore port number on remote file.
+      block:
+        - name: Get saved port number
+          slurp:
+            src: "{{ saved_port_file }}"
+          register: mounts
+        - name: restore port number install-algo-to.yml
+          set_fact:
+            # wireguard_port: "{{ lookup('file', saved_port_file) | int }}" # this line doesn't work because lookup always happen at local server.
+            wireguard_port: "{{ mounts['content'] | b64decode | int}}"
       when: stat_result.stat.exists
     # - debug: var=inventory_hostname
     # - debug: var=ansible_hostname

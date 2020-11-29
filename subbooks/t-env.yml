@@ -65,6 +65,13 @@
     - name: set default
       debug:
         msg: "{{ max_conf | default(250)}}"
+    - name: Find out what the remote machine's mounts are
+      slurp:
+        src: i.txt
+      register: mounts
+
+    - debug:
+        msg: "{{ mounts['content'] | b64decode }}"
 
 # export FC=linoxide.com
   # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd subbooks/t-env.yml
