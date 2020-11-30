@@ -16,11 +16,11 @@ BEGIN
         -- set the current confs to abandoned. then assign new confs.
         SELECT count(*) INTO already_numbers FROM conf_user AS c WHERE c.account_id = NEW.account_id;
         -- select confs from another continent.
-        SELECT count(*) INTO remain_numbers FROM conf_user AS c INNER JOIN server s ON c.server_id = s.id WHERE LOWER(s.continent) = LOWER(NEW.continent) AND c.account_id is NULL AND c.state = 'normal';
+        SELECT count(*) INTO remain_numbers FROM conf_user AS c INNER JOIN server s ON c.server_id = s.id WHERE LOWER(s.continent) = LOWER(NEW.param_one) AND c.account_id is NULL AND c.state = 'normal';
         IF remain_numbers > already_numbers THEN
             UPDATE conf_user SET state = 'abandoned', account_id = null WHERE account_id = NEW.account_id;
             FOR conf_id IN 
-                SELECT c.id FROM conf_user AS c INNER JOIN s ON c.server_id = s.id WHERE LOWER(s.continent) = LOWER(NEW.continent) AND  c.account_id is NULL AND c.state = 'normal' limit already_numbers
+                SELECT c.id FROM conf_user AS c INNER JOIN s ON c.server_id = s.id WHERE LOWER(s.continent) = LOWER(NEW.param_one) AND  c.account_id is NULL AND c.state = 'normal' limit already_numbers
             LOOP
                 UPDATE conf_user SET account_id = NEW.account_id WHERE id = conf_id;
             END LOOP;
