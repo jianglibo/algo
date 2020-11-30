@@ -103,6 +103,10 @@
     - name: restore port number in users.yml
       set_fact:
         wireguard_port: "{{ lookup('file', saved_port_file) | int }}"
+      tags: update-users
+    - name: display wireguard_port.
+      debug:
+        var: wireguard_port
     - name: import tasks
       import_tasks: ./tasks/get-remain-conf-users.yml
       tags: update-users
