@@ -107,6 +107,7 @@
     - name: display wireguard_port.
       debug:
         var: wireguard_port
+      tags: update-users
     - name: import tasks
       import_tasks: ./tasks/get-remain-conf-users.yml
       tags: update-users
