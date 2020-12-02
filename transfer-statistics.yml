@@ -27,13 +27,19 @@
         - name: print out fetch_server_result
           debug:
             msg: "{{ fetch_server_result.json.data.server[0].id }}"
-        - name: echo json value
-          set_fact:
-            vnstat_output: "{{ lookup('file', 'tests/vnstat-output.json') }}"
+            #        - name: echo json value
+            #          set_fact:
+            #            vnstat_output: "{{ lookup('file', 'tests/vnstat-output.json') }}"
+        - name: run vnstat
+          command: vnstat --json d 2
+          register: vnstat_output_result
+        - name: display vnstat_output
+          debug:
+            var: vnstat_output_result
         - name: transfer data
           set_fact:
             interfaces: "{{ (interfaces | default([])) + [{'interface': item.name, 'statistics_at': item.traffic.day[0].date.year |string + '-' + item.traffic.day[0].date.month |string + '-' + item.traffic.day[0].date.day |string, 'server_id': fetch_server_result.json.data.server[0].id, 'tx': item.traffic.day[0].tx, 'rx': item.traffic.day[0].rx}] }}"
-          with_items: "{{ vnstat_output.interfaces }}"
+          with_items: "{{ (vnstat_output_result.stdout | from_json).interfaces }}"
         - name: print interfaces
           debug:
             var: interfaces
