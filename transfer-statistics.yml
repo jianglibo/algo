@@ -1,0 +1,60 @@
+---
+- hosts: localhost
+# ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"vpn_server_ip": "168.119.166.150"}' transfer-statistics.yml
+  become: false
+  vars_files:
+    - config.cfg
+    - vars/sec.yml
+    - vars/cfg.yml
+  tasks:
+    - name: get server id by email.
+      block:
+        - name: invoke graphql.
+          uri:
+            url: "{{ gl_endpoint }}"
+            method: POST
+            headers:
+              x-hasura-admin-secret: "{{ hasura_admin }}"
+            body_format: json
+            body:
+              query: |
+                query ServerIdByIpv4 {
+                  server(where: {ipv4: {_eq: "{{ vpn_server_ip }}"}}) {
+                    id
+                  }
+                }
+          register: fetch_server_result
+        - name: print out fetch_server_result
+          debug:
+            msg: "{{ fetch_server_result.json.data.server[0].id }}"
+        - name: echo json value
+          set_fact:
+            vnstat_output: "{{ lookup('file', 'tests/vnstat-output.json') }}"
+        - name: transfer data
+          set_fact:
+            interfaces: "{{ (interfaces | default([])) + [{'interface': item.name, 'statistics_at': item.traffic.day[1].date.year |string + '-' + item.traffic.day[1].date.month |string + '-' + item.traffic.day[1].date.day |string, 'server_id': fetch_server_result.json.data.server[0].id, 'tx': item.traffic.day[1].tx, 'rx': item.traffic.day[1].rx}] }}"
+          with_items: "{{ vnstat_output.interfaces }}"
+        - name: print interfaces
+          debug:
+            var: interfaces
+        - name: insert bandwithd items.
+          uri:
+            url: "{{ gl_endpoint }}"
+            method: POST
+            headers:
+              x-hasura-admin-secret: "{{ hasura_admin }}"
+            body_format: json
+            body:
+              query: |
+                mutation MyMutation($interfaces: [bandwidth_insert_input!]!) {
+                  insert_bandwidth(objects: $interfaces) {
+                    affected_rows
+                  }
+                }
+              variables:
+                interfaces: "{{ interfaces }}"
+          register: insert_result
+        - name: print insert_result
+          debug:
+            var: insert_result
+

@@ -1,0 +1,58 @@
+{
+  "vnstatversion": "2.6",
+  "jsonversion": "2",
+  "interfaces": [
+    {
+      "name": "eth0",
+      "alias": "",
+      "created": { "date": { "year": 2020, "month": 12, "day": 1 } },
+      "updated": {
+        "date": { "year": 2020, "month": 12, "day": 2 },
+        "time": { "hour": 3, "minute": 20 }
+      },
+      "traffic": {
+        "total": { "rx": 121926739, "tx": 129469483 },
+        "day": [
+          {
+            "id": 2,
+            "date": { "year": 2020, "month": 12, "day": 1 },
+            "rx": 118692271,
+            "tx": 125248414
+          },
+          {
+            "id": 4,
+            "date": { "year": 2020, "month": 12, "day": 2 },
+            "rx": 3234468,
+            "tx": 4221069
+          }
+        ]
+      }
+    },
+    {
+      "name": "wg0",
+      "alias": "",
+      "created": { "date": { "year": 2020, "month": 12, "day": 1 } },
+      "updated": {
+        "date": { "year": 2020, "month": 12, "day": 2 },
+        "time": { "hour": 3, "minute": 20 }
+      },
+      "traffic": {
+        "total": { "rx": 8465708, "tx": 95351936 },
+        "day": [
+          {
+            "id": 1,
+            "date": { "year": 2020, "month": 12, "day": 1 },
+            "rx": 8465708,
+            "tx": 95351936
+          },
+          {
+            "id": 3,
+            "date": { "year": 2020, "month": 12, "day": 2 },
+            "rx": 0,
+            "tx": 0
+          }
+        ]
+      }
+    }
+  ]
+}
