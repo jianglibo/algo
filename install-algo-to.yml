@@ -166,6 +166,13 @@
         hour: "*/6"
         job: |- 
           cd /root/algo && source ./.env/bin/activate && ./algo update-users --vault-id hetzner@/opt/respme/hetzner.pwd --skip-tags \"debug\" -e '{"server": "localhost", "vpn_server_ip": "{{ vpn_server_ip }}"}' >> out.log 2>&1
+    - name: add vnstat cron
+      cron:
+        name: "upload vnstat of the last day."
+        minute: "{{ 60 | random }}"
+        hour: "{{ 6 | random }}"
+        job: |- 
+          cd /root/algo && source ./.env/bin/activate && ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"vpn_server_ip": "{{ vpn_server_ip }}"}' transfer-statistics.yml >> out.log 2>&1
     # - name: force update all users.
     #   block:
     #     - name: reset users list to empty.
