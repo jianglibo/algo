@@ -74,6 +74,7 @@
         pkg:
           - git
           - python3-virtualenv
+          - vnstat
         update_cache: yes
     - name: checkout algo
       git:
