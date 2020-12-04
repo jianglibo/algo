@@ -1,0 +1,47 @@
+CREATE OR REPLACE FUNCTION account_action_func() RETURNS trigger AS $expired_at$
+DECLARE
+    numbers Integer;
+BEGIN
+    IF NEW.action = 'assign_conf' THEN
+        SELECT count(*) INTO numbers from conf_user AS c where c.account_id = NEW.account_id;
+        IF (numbers = 0 ) THEN
+            UPDATE conf_user SET account_id = NEW.account_id
+            WHERE id IN (
+                SELECT id FROM (
+                    SELECT id FROM conf_user
+                WHERE (account_id is null) and state = 'normal'
+                    ORDER BY id ASC
+                    LIMIT 1
+                ) tmp
+            );
+        END IF;
+    ELSIF NEW.action = 'switch_conf' THEN
+        UPDATE conf_user SET account_id = NEW.account_id
+        WHERE id IN (
+            SELECT id FROM (
+                SELECT c.id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id
+            WHERE (c.account_id is null) and c.state = 'normal' and LOWER(s.continent) = LOWER(NEW.param_one)
+                ORDER BY c.id ASC
+                LIMIT 1
+            ) tmp
+        );
+        UPDATE conf_user SET account_id = null, state = 'abandoned' WHERE id = (NEW.param_two)::uuid;
+    ELSIF NEW.action = 'add_conf' THEN
+        UPDATE conf_user SET account_id = NEW.account_id
+        WHERE id IN (
+            SELECT id FROM (
+                SELECT id FROM conf_user
+            WHERE (account_id is null) and state = 'normal'
+                ORDER BY id ASC
+                LIMIT (NEW.param_one)::int
+            ) tmp
+        );
+    END IF;
+    -- return null will cause affected_rows to be 0
+    RETURN NEW;
+END;
+$expired_at$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER account_action_trigger BEFORE UPDATE ON account_action
+      FOR EACH ROW EXECUTE FUNCTION account_action_func();

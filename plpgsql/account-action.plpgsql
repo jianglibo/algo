@@ -37,6 +37,16 @@ BEGIN
                 RETURN NULL;
             END IF;
         END IF;
+    ELSIF NEW.action = 'add_conf' THEN
+        UPDATE conf_user SET account_id = NEW.account_id
+        WHERE id IN (
+            SELECT id FROM (
+                SELECT id FROM conf_user
+            WHERE (account_id is null) and state = 'normal'
+                ORDER BY id ASC
+                LIMIT (NEW.param_one)::int
+            ) tmp
+        );
     END IF;
     -- return null will cause affected_rows to be 0
     RETURN NEW;
