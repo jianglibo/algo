@@ -10,7 +10,7 @@
         body:
           query: |
             query GetRemainCfgUsers {
-              conf_user(where: {server: {ipv4: {_eq: "{{ vpn_server_ip }}"}}, _and: {state: {_in: [normal, preparing]}}}) {
+              conf_user(where: {server: {ipv4: {_eq: "{{ vpn_server_ip }}"}, state: {_eq: online}}, _and: {state: {_in: [normal, preparing]}}}) {
                 id
               }
             }
@@ -18,6 +18,13 @@
     - name: print out fetch_users_result
       debug:
         var: fetch_users_result
+    - name: stop play if users is empty.
+      block:
+        - name: "end play if fetched users is empty."
+          debug:
+            msg: "sever is offline, ending play"
+        - meta: end_play
+      when: (fetch_users_result.json.data.conf_user | length) == 0        
     - name: Check that the previous_user_list file exists
       stat:
         path: "{{ previous_user_list }}"
