@@ -10,10 +10,8 @@ BEGIN
         SELECT count(*) INTO numbers from conf_user AS c where c.account_id = NEW.account_id;
         IF (numbers = 0 ) THEN
             UPDATE conf_user SET account_id = NEW.account_id WHERE id IN (
-                SELECT id FROM conf_user AS c INNER JOIN server s ON c.server_id = s.id WHERE c.account_id is NULL AND c.state = 'normal' AND s.state = 'online' LIMIT 1
+                SELECT id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id WHERE c.account_id is NULL AND c.state = 'normal' AND s.state = 'online' LIMIT 1
             );
-        -- SELECT * INTO one_conf_user FROM conf_user AS c WHERE c.account_id is NULL AND c.state = 'normal' LIMIT 1 FOR UPDATE;
-        -- UPDATE conf_user SET account_id = NEW.account_id WHERE id = one_conf_user.id;
         END IF;
     ELSIF NEW.action = 'switch_conf' THEN
         -- set the current confs to abandoned. then assign new confs.
@@ -26,7 +24,7 @@ BEGIN
                 SELECT c.id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id WHERE LOWER(s.continent) = LOWER(NEW.param_one) AND c.account_id is NULL AND c.state = 'normal' AND s.state = 'online' limit already_numbers
             );
         ELSE
-            SELECT count(*) INTO remain_numbers FROM conf_user AS c WHERE c.account_id is NULL AND c.state = 'normal' AND s.state = 'online';
+            SELECT count(*) INTO remain_numbers FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id WHERE c.account_id is NULL AND c.state = 'normal' AND s.state = 'online';
             IF remain_numbers > already_numbers THEN
                 UPDATE conf_user SET account_id = NEW.account_id WHERE id IN (
                     SELECT c.id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id WHERE c.account_id is NULL AND c.state = 'normal' AND s.state = 'online' limit already_numbers
