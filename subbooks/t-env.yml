@@ -6,9 +6,10 @@
     - ../config.cfg
     - ../vars/cfg.yml
   tasks:
-    - name: test env exists.
+    - name: test regex_replace
+      # 288efec7-be65-4681-8b64-13741b0547fb
       debug:
-        msg: "{{ abc is defined }}"
+        msg: "{{ ['288efec7be6546818b6413741b0547fb'] | map('regex_replace', '^(.{8})(.{4})(.{4})(.{4})', '\\1-\\2-\\3-\\4-') | list  }}"
       # when: ansible_facts.env.abc
     - name: fail if users not as expected.
       fail:
