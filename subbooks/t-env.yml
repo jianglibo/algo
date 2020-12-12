@@ -6,6 +6,13 @@
     - ../config.cfg
     - ../vars/cfg.yml
   tasks:
+    - name: test env exists.
+      debug:
+        msg: "{{ abc is defined }}"
+      # when: ansible_facts.env.abc
+    - name: fail if users not as expected.
+      fail:
+        msg: "just fail."
     - name: display file content
       debug:
         msg: "'{{ lookup('env', 'FC') }}' is the HOME environment variable."

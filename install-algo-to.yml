@@ -4,7 +4,7 @@
   tags: always
 - name: install algo in target server.
   # gather_facts: false
-  # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"vpn_server_ip": "168.119.166.150", "max_conf": 250}' install-algo-to.yml
+  # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"vpn_server_ip": "168.119.166.150", "max_conf": 250, "provider": "vultr", "continent": "ASIA" }' install-algo-to.yml
   hosts: vpn-server
         # ./algo -e '{"provider": "local", "ondemand_cellular": "N", "ondemand_wifi": "N", "ipsec_enabled": false, "dns_adblocking": "N", "ssh_tunneling": "N", "server": "localhost", "endpoint": "94.130.169.110"}'
   vars_files:
@@ -25,6 +25,17 @@
     respme_base: /opt/respme
       # users: []
   tasks:
+    # - name: if reinstall is true
+    #   block:
+    #     - name: delete respme_base
+    #       file:
+    #         path: "{{ item }}"
+    #         state: absent
+    #       with_items:
+    #         - ~/algo/configs/localhost
+    #         - "~/algo/configs/{{ vpn_server_ip }}"
+    #         - "{{ previous_user_list }}"
+    #   when: reinstall is defined
     - name: create base directory.
       file:
         path: "{{ respme_base }}/writable"
@@ -98,10 +109,12 @@
       shell: >-
         source .env/bin/activate &&
         ansible-galaxy collection install azure.azcollection &&
-        python3 -m pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt
+        python3 -m pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt &&
+        touch azure.collection.installed
       args:
         chdir: ~/algo
         executable: /bin/bash
+        creates: azure.collection.installed
     - name: install wireguard, this is happening in remote server.
       shell: |
         source .env/bin/activate && 

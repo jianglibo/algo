@@ -40,7 +40,7 @@
         name: old_users_list
     - name: set fact users.
       set_fact:
-        users: "{{ fetch_users_result.json.data.conf_user | map(attribute='id') | list}}"
+        users: "{{ fetch_users_result.json.data.conf_user | map(attribute='id') | map('regex_replace', '-', '') | list}}"
     - name: set fact users_diff.
       set_fact:
         users_diff: "{{ users | difference(old_users_list.users) }}"
