@@ -1,12 +1,10 @@
 CREATE OR REPLACE VIEW "public"."remain_conf_on_server" AS 
  SELECT
   c.server_id,
-  count(*) AS count,
+  count(c) filter (where c.state <> 'abandoned') AS count,
   s.max_conf
 FROM
   conf_user AS c
 INNER JOIN server as s ON s.id = c.server_id
-WHERE
-  (c.state <> 'abandoned')
 GROUP BY
   s.max_conf, c.server_id;
