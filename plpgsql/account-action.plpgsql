@@ -9,9 +9,14 @@ BEGIN
     IF NEW.action = 'assign_conf' THEN
         SELECT count(*) INTO numbers from conf_user AS c where c.account_id = NEW.account_id;
         IF (numbers = 0 ) THEN
-            UPDATE conf_user SET account_id = NEW.account_id WHERE id IN (
-                SELECT id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id WHERE c.account_id is NULL AND c.state = 'normal' AND s.state = 'online' LIMIT 1
-            );
+            IF (NEW.param_one is NULL) THEN
+                UPDATE conf_user SET account_id = NEW.account_id WHERE id IN (
+                    SELECT id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id WHERE c.account_id is NULL AND c.state = 'normal' AND s.state = 'online' LIMIT 1
+                );
+            ELSE
+                UPDATE conf_user SET account_id = NEW.account_id WHERE id IN (
+                    SELECT id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id WHERE c.account_id is NULL AND c.state = 'normal' AND s.state = 'online' AND s.continent = NEW.param_one LIMIT 1
+                );
         END IF;
     ELSIF NEW.action = 'switch_conf' THEN
         -- set the current confs to abandoned. then assign new confs.
@@ -34,13 +39,23 @@ BEGIN
             END IF;
         END IF;
     ELSIF NEW.action = 'add_conf' THEN
-        UPDATE conf_user SET account_id = NEW.account_id
-        WHERE id IN (
-            SELECT c.id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id
-                WHERE (c.account_id is null) AND c.state = 'normal' AND s.state = 'online' AND s.continent = NEW.param_two
-                    ORDER BY c.id ASC
-                    LIMIT (NEW.param_one)::int
-        );
+        IF (NEW.param_two is NULL) THEN
+            UPDATE conf_user SET account_id = NEW.account_id
+            WHERE id IN (
+                SELECT c.id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id
+                    WHERE (c.account_id is null) AND c.state = 'normal' AND s.state = 'online'
+                        ORDER BY c.id ASC
+                        LIMIT (NEW.param_one)::int
+            );
+        ELSE
+            UPDATE conf_user SET account_id = NEW.account_id
+            WHERE id IN (
+                SELECT c.id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id
+                    WHERE (c.account_id is null) AND c.state = 'normal' AND s.state = 'online' AND s.continent = NEW.param_two
+                        ORDER BY c.id ASC
+                        LIMIT (NEW.param_one)::int
+            );
+        END IF;
     END IF;
     -- return null will cause affected_rows to be 0
     RETURN NEW;
