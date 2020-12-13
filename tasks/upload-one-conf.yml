@@ -37,6 +37,6 @@
     - name: change variables in parent scope.
       set_fact:
         successed_blobs: "{{ successed_blobs + [item] if upload_result.changed else successed_blobs }}"
-    - name: server result
+    - name: azure upload result
       debug:
         msg: "{{ upload_result }}"
