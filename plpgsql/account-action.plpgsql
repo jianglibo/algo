@@ -37,7 +37,7 @@ BEGIN
         UPDATE conf_user SET account_id = NEW.account_id
         WHERE id IN (
             SELECT c.id FROM conf_user AS c INNER JOIN server AS s ON c.server_id = s.id
-                WHERE (c.account_id is null) AND c.state = 'normal' AND s.state = 'online'
+                WHERE (c.account_id is null) AND c.state = 'normal' AND s.state = 'online' AND s.continent = NEW.param_two
                     ORDER BY c.id ASC
                     LIMIT (NEW.param_one)::int
         );
