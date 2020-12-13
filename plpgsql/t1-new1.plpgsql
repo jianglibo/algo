@@ -1,0 +1,33 @@
+CREATE OR REPLACE FUNCTION update_conf_state_func() RETURNS trigger AS $expired_at$
+    DECLARE
+        right_now timestamp := now();
+        server_conf_num remain_conf_on_server;
+        cnt int;
+    BEGIN
+        UPDATE 
+            conf_user cu
+        SET 
+            state = 'abandoned',
+            account_id = null
+        FROM 
+            account a
+        WHERE 
+            cu.account_id = a.id and a.expired_at < right_now;
+
+        RAISE NOTICE 'Create new account...';
+        FOR server_conf_num IN
+            SELECT * FROM remain_conf_on_server
+        LOOP
+            cnt := server_conf_num.max_conf - server_conf_num.count;
+            IF (cnt > 0) THEN
+                INSERT INTO conf_user(server_id) SELECT unnest(array_fill(server_conf_num.server_id, ARRAY[cnt]));
+            END IF;
+        END LOOP;
+          
+        RETURN NEW;
+    END;
+$expired_at$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER update_conf_state_trigger BEFORE UPDATE ON t
+      FOR EACH ROW EXECUTE PROCEDURE update_conf_state_func();
