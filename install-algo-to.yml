@@ -3,6 +3,7 @@
   import_playbook: prepare-group.yml
   tags: always
 - name: install algo in target server.
+  # ansible-galaxy collection install community.general
   # gather_facts: false
   # ansible-playbook --vault-id hetzner@/opt/respme/hetzner.pwd -e '{"vpn_server_ip": "168.119.166.150", "max_conf": 250, "provider": "vultr", "continent": "ASIA" }' install-algo-to.yml
   hosts: vpn-server
