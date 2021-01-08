@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION before_delete_account_func() RETURNS trigger AS $expired_at$
 BEGIN
     UPDATE conf_user SET account_id = null, state = 'abandoned' WHERE account_id = OLD.id;
-    DELETE FROM account_action WHERE email = OLD.email;
+    DELETE FROM account_action WHERE account_id = OLD.id;
     RETURN OLD;
 END;
 $expired_at$ LANGUAGE plpgsql;
