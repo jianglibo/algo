@@ -1,3 +1,5 @@
+-- this triggers has been already replaced by code implementation. 2021.02.04
+
 CREATE OR REPLACE FUNCTION set_account_expired_at_func() RETURNS trigger AS $expired_at$
     DECLARE
         expire_in_days timestamp := now() + '3 days';
@@ -12,6 +14,7 @@ CREATE TRIGGER set_account_expired_at_trigger BEFORE INSERT ON account
       FOR EACH ROW EXECUTE FUNCTION set_account_expired_at_func()
 
 -- we will assign a conf_user to new created account.
+-- This trigger still in use. 2021.02.04
 
 CREATE OR REPLACE FUNCTION create_init_conf_for_account_func() RETURNS trigger AS $expired_at$
     DECLARE
