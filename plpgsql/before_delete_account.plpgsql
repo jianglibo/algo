@@ -1,3 +1,5 @@
+-- already disable this function, implemented in the java code.
+
 CREATE OR REPLACE FUNCTION before_delete_account_func() RETURNS trigger AS $expired_at$
 BEGIN
     UPDATE conf_user SET account_id = null, state = 'abandoned' WHERE account_id = OLD.id;
@@ -9,3 +11,5 @@ $expired_at$ LANGUAGE plpgsql;
 
 CREATE TRIGGER before_delete_account_trigger BEFORE DELETE ON account
       FOR EACH ROW EXECUTE FUNCTION before_delete_account_func();
+
+DROP TRIGGER before_delete_account_trigger ON account;
