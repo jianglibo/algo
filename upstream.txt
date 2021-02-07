@@ -1,0 +1,10 @@
+git remote add upstream https://github.com/trailofbits/algo.git
+
+git remote -v
+
+git fetch upstream
+ * [new branch]      main     -> upstream/main
+
+git checkout waiting
+git merge upstream/main
+

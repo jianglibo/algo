@@ -38,6 +38,7 @@
       include_vars:
         file: "{{ previous_user_list }}"
         name: old_users_list
+    # will override users in the config.cfg. this is where owner code plugin.
     - name: set fact users.
       set_fact:
         users: "{{ fetch_users_result.json.data.conf_user | map(attribute='id') | map('regex_replace', '-', '') | list}}"
